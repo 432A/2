@@ -7635,7 +7635,7 @@ function renderMatches(){
     status==="stopped"   ? "<div class='time-status status-stopped'>توقفت</div>" :
     status==="canceled"  ? "<div class='time-status status-canceled'>أُلغيت</div>" :
     status==="ended"     ? "<div class='time-status status-ended'>انتهت</div>" :
-    status==="live"      ? "<div class='time-status status-live'>بدأت</div>" :
+    status==="live"      ? "<div class='time-status status-live'>مباشر</div>" :
     `<div class='time-status status-time'>${convertGMTToLocalTime(m.gmtTime)}</div>`;
       const card = document.createElement("div");
       card.className = "match-card";
@@ -7738,7 +7738,7 @@ grouped[league].forEach(m=>{
     status==="stopped"   ? "<div class='time-status status-stopped'>توقفت</div>" :
     status==="canceled"  ? "<div class='time-status status-canceled'>أُلغيت</div>" :
     status==="ended"     ? "<div class='time-status status-ended'>انتهت</div>" :
-    status==="live"      ? "<div class='time-status status-live'>بدأت</div>" :
+    status==="live"      ? "<div class='time-status status-live'>مباشر</div>" :
     `<div class='time-status status-time'>${convertGMTToLocalTime(m.gmtTime)}</div>`;
   const card=document.createElement("div");
   card.className="match-card";

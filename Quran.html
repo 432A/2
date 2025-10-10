@@ -1,0 +1,1116 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>إذاعة القرآن الكريم</title>
+<link href="https://db.onlinewebfonts.com/c/b86c0f3afb7b6eb1952be1d4c753140c?family=Al-Jazeera-Arabic-Regular" rel="stylesheet">
+
+<style>
+  :root{
+    --bg:#0f1113; --muted:#9aa0a6; --accent:#282828; color-scheme: dark;
+  }
+  body{
+    margin:0; 
+    font-family:Al-Jazeera-Arabic-Regular,Segoe UI,Roboto,Arial; 
+    background:var(--bg); 
+    color:#e8eef2;
+    user-select:none;
+    direction: rtl;
+    text-align: right;
+  }
+  .container{ 
+    padding:12px; 
+    max-width:720px; 
+    margin:0 auto; 
+    padding-bottom: 100px; /* مساحة للمشغل */
+  }
+  .search{ 
+    margin-bottom:10px; 
+    text-align: right;
+  }
+  input[type="search"]{
+    width:100%; 
+    padding:12px 10px; 
+    border-radius:10px;
+    border:1px solid rgba(255,255,255,0.08);
+    background:rgba(255,255,255,0.02); 
+    color:inherit; 
+    font-size:16px;
+    outline:none;
+    text-align: right;
+    direction: rtl;
+  }
+  input[type="search"]::placeholder{
+    text-align: right;
+    direction: rtl;
+  }
+  .group-title{
+    margin:8px 0 6px 0; 
+    padding:10px; 
+    border-radius:10px;
+    background:rgba(255,255,255,0.04); 
+    cursor:pointer; 
+    font-weight:600;
+    transition:background .15s;
+    text-align: right;
+  }
+  .group-title:active{ background:var(--accent); }
+  ul.chlist{ 
+    list-style:none; 
+    padding:6px 6px 12px 6px; 
+    margin:0; 
+    display:none; 
+  }
+  li.chan{
+    display:flex; 
+    align-items:center; 
+    margin:6px 0; 
+    padding:8px;
+    border-radius:8px; 
+    transition:background .14s;
+    justify-content: flex-start;
+    gap: 12px;
+    cursor: pointer;
+  }
+  li.chan:hover{ background:rgba(255,255,255,0.05); }
+  li.chan:active{ background:var(--accent); }
+  .logo{
+    width:42px; 
+    height:42px; 
+    border-radius:50%; 
+    overflow:hidden; 
+    flex-shrink:0;
+    display:flex; 
+    align-items:center; 
+    justify-content:center; 
+    background:#333; 
+    color:#ddd; 
+    font-weight:700;
+    order: 1;
+  }
+  .logo img{ 
+    width:100%; 
+    height:100%; 
+    object-fit:cover; 
+    display:block; 
+  }
+  .ch-title{ 
+    font-size:15px; 
+    white-space:nowrap; 
+    overflow:hidden; 
+    text-overflow:ellipsis; 
+    text-align: right;
+    flex: 1;
+    order: 2;
+  }
+  .results{ margin-top:8px; }
+  .nores{ 
+    color:var(--muted); 
+    text-align:center; 
+    padding:14px 0; 
+  }
+
+  /* مؤشر التحميل */
+  .loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    color: var(--muted);
+  }
+  .spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid rgba(255,255,255,0.1);
+    border-left: 4px solid #e8eef2;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 10px;
+  }
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  .retry-btn {
+    background: rgba(255,255,255,0.1);
+    border: none;
+    color: #e8eef2;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: background .15s;
+  }
+  .retry-btn:hover {
+    background: rgba(255,255,255,0.2);
+  }
+
+  /* مشغل الصوت */
+  .audio-player {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    background: rgba(20, 22, 25, 0.95);
+    backdrop-filter: blur(10px);
+    border-top: 1px solid rgba(255,255,255,0.1);
+    padding: 15px 20px;
+    z-index: 1000;
+    display: none;
+  }
+
+  .player-active {
+    display: block;
+  }
+
+  .player-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  .player-logo {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: #333;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ddd;
+    font-weight: bold;
+    flex-shrink: 0;
+  }
+
+  .player-logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .player-title {
+    flex: 1;
+    font-size: 16px;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .player-controls {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    justify-content: center;
+  }
+
+  .control-btn {
+    background: rgba(255,255,255,0.1);
+    border: none;
+    border-radius: 50%;
+    width: 44px;
+    height: 44px;
+    color: #e8eef2;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+    font-size: 18px;
+  }
+
+  .control-btn:hover {
+    background: rgba(255,255,255,0.2);
+  }
+
+  .control-btn:active {
+    background: var(--accent);
+  }
+
+  .play-btn {
+    background: #4CAF50;
+    width: 50px;
+    height: 50px;
+    font-size: 20px;
+  }
+
+  .play-btn:hover {
+    background: #45a049;
+  }
+
+  .close-btn {
+    position: absolute;
+    left: 20px;
+    top: 15px;
+    background: rgba(255,255,255,0.1);
+    border: none;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    color: #e8eef2;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+  }
+
+  .close-btn:hover {
+    background: rgba(255,0,0,0.3);
+  }
+
+  .control-btn svg {
+    width: 24px;
+    height: 24px;
+    fill: currentColor;
+  }
+
+  .play-btn svg {
+    width: 28px;
+    height: 28px;
+  }
+
+  /* تنسيق الرسالة المنبثقة */
+  .app-promotion {
+    position: fixed;
+    top: 0;
+    right: 0;
+    left: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    padding: 20px;
+    backdrop-filter: blur(5px);
+  }
+
+  .promotion-content {
+    background: var(--bg);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 15px;
+    padding: 25px;
+    max-width: 400px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    position: relative;
+  }
+
+  .promotion-close {
+    position: absolute;
+    left: 15px;
+    top: 15px;
+    background: rgba(255,255,255,0.1);
+    border: none;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    color: #e8eef2;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+  }
+
+  .promotion-close:hover {
+    background: rgba(255,0,0,0.3);
+  }
+
+  .promotion-icon {
+    font-size: 48px;
+    margin-bottom: 15px;
+  }
+
+  .promotion-title {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #4CAF50;
+  }
+
+  .promotion-text {
+    margin-bottom: 20px;
+    line-height: 1.6;
+    color: var(--muted);
+  }
+
+  .promotion-buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+  }
+
+  .promotion-btn {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s;
+    flex: 1;
+  }
+
+  .promotion-btn.primary {
+    background: #4CAF50;
+    color: white;
+  }
+
+  .promotion-btn.primary:hover {
+    background: #45a049;
+  }
+
+  .promotion-btn.secondary {
+    background: rgba(255,255,255,0.1);
+    color: #e8eef2;
+  }
+
+  .promotion-btn.secondary:hover {
+    background: rgba(255,255,255,0.2);
+  
+  }
+</style>
+</head>
+<body oncontextmenu="return false">
+  <div class="container">
+    <div class="search">
+      <input id="searchInput" type="search" placeholder="بحث..." aria-label="بحث عن القارئ">
+    </div>
+    <div id="loadingIndicator" class="loading" style="display:none">
+      <div class="spinner"></div>
+      <div>جاري تحميل القنوات...</div>
+    </div>
+    <div id="groupsRoot"></div>
+    <div id="resultsRoot" class="results" style="display:none"></div>
+        </div> 
+      <!-- التليجرام ---------> 
+      <svg style="display:none"> 
+       <defs> 
+        <symbol id="telegramfill" viewbox="0 0 100 100"> 
+         <path d="M50 0c27.6 0 50 22.4 50 50s-22.4 50-50 50S0 77.6 0 50 22.4 0 50 0z" fill="#4eb7e6"></path>
+         <path d="M38.6 71c-1.7 0-1.4-.6-2-2.2l-5-16.3 30.7-19.2 3.6.9-3 8.1" fill="#c8daea"></path>
+         <path d="M38.6 71c1.3 0 1.9-.6 2.6-1.3 1.1-1.1 15.6-15.2 15.6-15.2L48 52.4l-8.2 5.2-1.1 13" fill="#a7c2d1"></path>
+         <path d="M39.5 57.8l20.9 15.5c2.4 1.3 4.1.6 4.7-2.2l8.5-40.2c.9-3.5-1.3-5.1-3.6-4.1L20 46.1c-3.4 1.4-3.4 3.3-.6 4.1l12.8 4L62 35.5c1.4-.9 2.7-.4 1.6.5" fill="#eff7fc"></path> 
+        </symbol> 
+       </defs> 
+      </svg> 
+      <div class="messanger telegram-luna is-active"> 
+       <span class="telegram-luna__new" aria-hidden="true" style="display:none">+179</span> 
+       <a class="messanger__in" href="https://telegram.me/ABDESSAMAD1#Intent;scheme=http;package=com.android.chrome;end" target="_blank" title="Join our Telegram channel"> 
+        <div class="messanger__thumbnail"> 
+         <svg class="telegram-luna__icon"> 
+          <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#telegramfill"> 
+          </use> 
+         </svg> 
+        </div> 
+        <div class="messanger__desc"> 
+         <h6 class="messanger__title telegram-luna__title">Telegram</h6> 
+        </div> </a> 
+      </div> 
+      <style>
+<link href="https://fonts.googleapis.com/css2?family=Almarai:wght@700&display=swap" rel="stylesheet">
+
+.pulse{animation:pulse 2s infinite}
+@keyframes btnun-what{10%{transform:translate(0,200px)}50%{transform:translate(0,-40px)}70%{transform:scale(1.1)}}
+@keyframes pulse{50%{transform:scale(1.1)}}
+
+
+@keyframes blink{50%{opacity:0}from{opacity:1}to{opacity:1}}
+.messanger{background-color:#fff;border-radius:5px;bottom:20px;box-sizing:border-box;cursor:pointer;height:50px;padding:10px;opacity:0;padding:5px;pointer-events:none;position:fixed;right:20px;transition:all 0.2s;width:50px;z-index:999}
+.messanger.is-active{opacity:1;pointer-events:auto}
+.messanger:before{border-radius:5px;bottom:0;box-shadow:0 24px 24px rgba(14,10,50,0.25);content:"";left:0;pointer-events:none;position:absolute;right:0;top:0}
+.messanger:hover .messanger__desc{opacity:1;pointer-events:all}
+.messanger__desc{-ms-flex-positive:1;-webkit-box-flex:1;flex-grow:1;margin-left:10px;opacity:0;pointer-events:none;transition:opacity 0.2s}
+.messanger__in{-ms-flex-align:center;-webkit-box-align:center;align-items:center;display:-webkit-box;display:-ms-flexbox;display:flex;overflow:hidden;white-space:nowrap}
+.messanger__text{color:#13244f;font-size:0.875rem}
+.messanger__thumbnail{-ms-flex-item-align:baseline;align-self:baseline;height:40px;position:relative;width:40px}
+.messanger__thumbnail:after{-webkit-animation:blink 2s infinite;animation:blink 2s infinite;background-color:#23e16f;border:2px solid #fff;border-radius:50%;bottom:0;content:"";height:8px;position:absolute;right:0;width:8px}
+.telegram-luna:hover{width:160px}
+.telegram-luna__icon{height:40px;width:40px}
+.telegram-luna__title{color:#4ea8d1;font-size:0.875rem;font-size:0.75rem;text-transform:uppercase}
+.messanger a{background:transparent;border:0;color:#231c57;font-size:100%;margin:0;outline:0;padding:0;text-decoration:none;vertical-align:baseline}
+.messanger h6{background:transparent;border:0;font-size:100%;font-weight:400;margin:0;outline:0;padding:0;vertical-align:baseline;font-family: 'Almarai';text-align: center;}
+</style> 
+      <!-- التليجرام ---------> 
+  </div>
+
+  <!-- مشغل الصوت -->
+  <div id="audioPlayer" class="audio-player">
+    <button class="close-btn" onclick="closePlayer()">✕</button>
+    <div class="player-info">
+      <div class="player-logo" id="playerLogo">
+        <span>TV</span>
+      </div>
+      <div class="player-title" id="playerTitle">إسم القناة</div>
+    </div>
+    <div class="player-controls">
+      <button class="control-btn" onclick="playPrevious()">
+        <svg viewBox="0 0 24 24">
+          <path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/>
+        </svg>
+      </button>
+      <button class="control-btn play-btn" onclick="togglePlay()" id="playBtn">
+        <svg viewBox="0 0 24 24" id="playIcon">
+          <path d="M8 5v14l11-7z"/>
+        </svg>
+      </button>
+      <button class="control-btn" onclick="playNext()">
+        <svg viewBox="0 0 24 24">
+          <path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/>
+        </svg>
+      </button>
+    </div>
+    <audio id="audioElement" preload="metadata"></audio>
+  </div>
+
+  <!-- رسالة الترويج للتطبيق -->
+  <div id="appPromotion" class="app-promotion" style="display: none;">
+    <div class="promotion-content">
+      <button class="promotion-close" onclick="closePromotionPermanently()">✕</button>
+      <div class="promotion-icon"></div>
+      <div class="promotion-title">تطبيق الجوال</div>
+      <div class="promotion-text">
+        حمّل تطبيقنا على هاتفك الأندرويد لتجربة أفضل
+        <br><br>
+        <small></small>
+      </div>
+      <div class="promotion-buttons">
+        <button class="promotion-btn secondary" onclick="closePromotion()">لاحقاً</button>
+        <button class="promotion-btn primary" onclick="downloadApp()">تحميل التطبيق</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+const SOURCE_RAW = "https://github.com/432A/1/raw/refs/heads/main/radio";
+// قائمة بالخوادم الوكيلة البديلة
+const PROXIES = [
+  "https://api.allorigins.win/raw?url=",
+  "https://corsproxy.io/?",
+  "https://cors-anywhere.herokuapp.com/",
+  "https://api.codetabs.com/v1/proxy?quest="
+];
+
+let groupsData = {};
+let allChannelsFlat = [];
+let currentAudio = document.getElementById('audioElement');
+let isPlaying = false;
+let currentChannelIndex = -1;
+let currentPlaylist = [];
+let currentProxyIndex = 0;
+const CACHE_KEY = 'radio_channels_cache';
+const CACHE_EXPIRY = 30 * 60 * 1000; // 30 دقيقة
+
+function showLoading() {
+  document.getElementById('loadingIndicator').style.display = 'flex';
+}
+
+function hideLoading() {
+  document.getElementById('loadingIndicator').style.display = 'none';
+}
+
+function showError(message, showRetry = true) {
+  const root = document.getElementById('groupsRoot');
+  root.innerHTML = `
+    <div class="nores">
+      <div>${message}</div>
+      ${showRetry ? '<button class="retry-btn" onclick="forceRefresh()">إعادة تحميل البيانات</button>' : ''}
+    </div>
+  `;
+}
+
+// دالة لجلب البيانات مع إعادة المحاولة
+async function fetchWithRetry(url, retries = 3, delay = 1000) {
+  for (let i = 0; i < retries; i++) {
+    try {
+      const proxyUrl = PROXIES[currentProxyIndex] + encodeURIComponent(url);
+      const response = await fetch(proxyUrl);
+      
+      if (response.ok) {
+        return await response.text();
+      }
+    } catch (error) {
+      console.error(`المحاولة ${i + 1} فشلت:`, error);
+      
+      // تجربة خادم وكيل مختلف في المحاولة التالية
+      currentProxyIndex = (currentProxyIndex + 1) % PROXIES.length;
+      
+      if (i < retries - 1) {
+        await new Promise(resolve => setTimeout(resolve, delay));
+        delay *= 1.5; // زيادة التأخير مع كل محاولة
+      }
+    }
+  }
+  
+  throw new Error('فشل جميع محاولات الجلب');
+}
+
+// التحقق من صلاحية البيانات المخزنة
+function isCacheValid(cacheData) {
+  if (!cacheData || !cacheData.timestamp) return false;
+  return (Date.now() - cacheData.timestamp) < CACHE_EXPIRY;
+}
+
+// تخزين البيانات محلياً
+function saveToCache(data) {
+  const cacheData = {
+    data: data,
+    timestamp: Date.now()
+  };
+  localStorage.setItem(CACHE_KEY, JSON.stringify(cacheData));
+}
+
+// استرجاع البيانات من التخزين المحلي
+function getFromCache() {
+  try {
+    const cached = localStorage.getItem(CACHE_KEY);
+    if (cached) {
+      return JSON.parse(cached);
+    }
+  } catch (e) {
+    console.error('خطأ في قراءة البيانات المخزنة:', e);
+  }
+  return null;
+}
+
+// دالة لإجبار التطبيق على جلب بيانات جديدة
+async function forceRefresh() {
+  // مسح التخزين المؤقت لإجبار التطبيق على جلب بيانات جديدة
+  localStorage.removeItem(CACHE_KEY);
+  init();
+}
+
+async function init() {
+  showLoading();
+  
+  try {
+    // محاولة جلب البيانات الجديدة أولاً
+    console.log('محاولة جلب البيانات الجديدة...');
+    const txt = await fetchWithRetry(SOURCE_RAW);
+    
+    // تخزين البيانات الجديدة
+    saveToCache(txt);
+    
+    parseM3U(txt);
+    renderGroups();
+    setupSearch();
+    setupAudioEvents();
+    
+    // عرض رسالة الترويج بعد التحميل
+    showAppPromotion();
+    
+  } catch (err) {
+    console.error('خطأ في تحميل القائمة:', err);
+    
+    // فقط في حالة الفشل، استخدام البيانات المخزنة
+    const cached = getFromCache();
+    if (cached && cached.data) {
+      console.log('استخدام البيانات المخزنة كبديل');
+      parseM3U(cached.data);
+      renderGroups();
+      setupSearch();
+      setupAudioEvents();
+      showError('يتم استخدام البيانات المخزنة (غير متصل بالإنترنت)', true);
+    } else {
+      showError('فشل تحميل القائمة. تأكد من اتصالك بالإنترنت.', true);
+    }
+  } finally {
+    hideLoading();
+  }
+}
+
+function cleanText(t){
+  return (t||"")
+    .replace(/[\u200B-\u200F\uFEFF]/g,"")
+    .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"")
+    .trim()
+    .toLowerCase();
+}
+
+// دالة بحث متقدمة تعرض النتائج تلقائياً
+function advancedSearch(query) {
+  const results = [];
+  const cleanQuery = cleanText(query);
+  
+  // تقسيم البحث إلى كلمات
+  const words = cleanQuery.split(/\s+/).filter(word => word.length > 0);
+  
+  if (words.length === 0) return results;
+  
+  // البحث في جميع المجلدات والقنوات
+  for (const groupName in groupsData) {
+    const cleanGroupName = cleanText(groupName);
+    
+    // إذا كانت جميع كلمات البحث موجودة في اسم المجلد
+    const allWordsInGroup = words.every(word => cleanGroupName.includes(word));
+    
+    // إذا كانت إحدى كلمات البحث تطابق اسم المجلد
+    const someWordInGroup = words.some(word => cleanGroupName.includes(word));
+    
+    if (allWordsInGroup) {
+      // إذا تطابقت جميع الكلمات مع اسم المجلد، عرض كل محتوياته
+      results.push(...groupsData[groupName]);
+    } else if (someWordInGroup) {
+      // إذا تطابقت بعض الكلمات مع اسم المجلد، البحث في قنواته
+      for (const channel of groupsData[groupName]) {
+        const cleanChannelName = cleanText(channel.name);
+        
+        // البحث عن الكلمات المتبقية في اسم القناة
+        const remainingWords = words.filter(word => !cleanGroupName.includes(word));
+        
+        if (remainingWords.length === 0) {
+          // إذا لم تتبقى كلمات، عرض جميع قنوات المجلد
+          results.push(channel);
+        } else {
+          // إذا تبقى كلمات، التحقق من تطابقها مع اسم القناة
+          const allRemainingInChannel = remainingWords.every(word => 
+            cleanChannelName.includes(word)
+          );
+          
+          if (allRemainingInChannel) {
+            results.push(channel);
+          }
+        }
+      }
+    } else {
+      // إذا لم يتطابق أي كلمة مع اسم المجلد، البحث في قنواته فقط
+      for (const channel of groupsData[groupName]) {
+        const cleanChannelName = cleanText(channel.name);
+        
+        // التحقق إذا كانت جميع كلمات البحث موجودة في اسم القناة
+        const allWordsInChannel = words.every(word => cleanChannelName.includes(word));
+        
+        if (allWordsInChannel) {
+          results.push(channel);
+        }
+      }
+    }
+  }
+  
+  // إزالة التكرارات
+  return [...new Set(results)];
+}
+
+// دالة لترتيب النتائج حسب مدى التطابق
+function sortSearchResults(results, query) {
+  const cleanQuery = cleanText(query);
+  const words = cleanQuery.split(/\s+/);
+  
+  return results.sort((a, b) => {
+    const aGroup = cleanText(a.group);
+    const aName = cleanText(a.name);
+    const bGroup = cleanText(b.group);
+    const bName = cleanText(b.name);
+    
+    // حساب نقاط التطابق للعنصر أ
+    let aScore = 0;
+    let bScore = 0;
+    
+    // نقاط إضافية للتطابق الكامل مع المجلد
+    words.forEach(word => {
+      if (aGroup.includes(word)) aScore += 2;
+      if (bGroup.includes(word)) bScore += 2;
+      
+      if (aName.includes(word)) aScore += 1;
+      if (bName.includes(word)) bScore += 1;
+    });
+    
+    return bScore - aScore;
+  });
+}
+
+function parseM3U(txt){
+  const lines = txt.split(/\r?\n/).map(l=>l.trim()).filter(Boolean);
+  let pending = null;
+  groupsData = {}; allChannelsFlat = [];
+
+  for (let i=0;i<lines.length;i++){
+    const line = lines[i];
+    if (line.startsWith('#EXTINF')) {
+      const nameMatch = line.match(/,(.*)$/);
+      const groupMatch = line.match(/group-title="(.*?)"/i);
+      const logoMatch  = line.match(/tvg-logo="(.*?)"/i) || line.match(/logo="(.*?)"/i);
+      pending = {
+        name: nameMatch ? nameMatch[1].trim() : '',
+        group: groupMatch ? groupMatch[1].trim() : 'إذاعة عامة',
+        logo: logoMatch ? logoMatch[1].trim() : ''
+      };
+      continue;
+    }
+    if (line.startsWith('#')) continue;
+    if (pending){
+      const ch = { 
+        name: pending.name, 
+        url: line, 
+        logo: pending.logo, 
+        group: pending.group 
+      };
+      if (!groupsData[ch.group]) groupsData[ch.group] = [];
+      groupsData[ch.group].push(ch);
+      allChannelsFlat.push(ch);
+      pending = null;
+    }
+  }
+}
+
+function renderGroups(){
+  const root = document.getElementById('groupsRoot');
+  root.innerHTML = '';
+  
+  if (Object.keys(groupsData).length === 0) {
+    showError('لا توجد قنوات متاحة', true);
+    return;
+  }
+  
+  for (const g in groupsData){
+    const title = document.createElement('div');
+    title.className = 'group-title';
+    title.textContent = g;
+    const ul = document.createElement('ul');
+    ul.className = 'chlist';
+    // تمرير false لعدم عرض اسم المجموعة في القائمة الرئيسية
+    groupsData[g].forEach(ch => ul.appendChild(makeChannelRow(ch, false)));
+    title.addEventListener('click', ()=> {
+      ul.style.display = ul.style.display === 'block' ? 'none' : 'block';
+    });
+    root.appendChild(title);
+    root.appendChild(ul);
+  }
+}
+
+function makeChannelRow(ch, showGroup = false) {
+  const li = document.createElement('li');
+  li.className = 'chan';
+  const logo = document.createElement('div');
+  logo.className = 'logo';
+  if (ch.logo){
+    const img = document.createElement('img'); 
+    img.src = ch.logo; 
+    img.alt = ch.name;
+    img.onerror = function() {
+      this.style.display = 'none';
+      logo.textContent = ch.name.charAt(0).toUpperCase() || 'MP3';
+    };
+    logo.appendChild(img);
+  } else { 
+    logo.textContent = ch.name.charAt(0).toUpperCase() || 'MP3'; 
+  }
+  
+  const t = document.createElement('div'); 
+  t.className = 'ch-title'; 
+  
+  // إضافة اسم المجموعة إذا كان showGroup = true
+  if (showGroup) {
+    t.textContent = `${ch.group} | ${ch.name}`;
+  } else {
+    t.textContent = ch.name;
+  }
+  
+  li.appendChild(logo); 
+  li.appendChild(t);
+  
+  li.addEventListener('click', ()=> playChannel(ch));
+  return li;
+}
+
+function setupSearch(){
+  const input = document.getElementById('searchInput');
+  const groupsRoot = document.getElementById('groupsRoot');
+  const resultsRoot = document.getElementById('resultsRoot');
+
+  input.addEventListener('input', ()=>{
+    const q = input.value.trim(); // استخدام النص الأصلي بدون تنظيف
+    if (!q){
+      resultsRoot.style.display = 'none'; 
+      groupsRoot.style.display = '';
+      resultsRoot.innerHTML = '';
+      return;
+    }
+    
+    let matches = advancedSearch(q);
+    
+    // ترتيب النتائج حسب مدى التطابق
+    matches = sortSearchResults(matches, q);
+    
+    resultsRoot.innerHTML = '';
+    if (!matches.length){
+      resultsRoot.innerHTML = '<div class="nores">لا توجد نتائج</div>';
+    } else {
+      const ul = document.createElement('ul');
+      ul.className = 'chlist'; 
+      ul.style.display = 'block';
+      matches.forEach(ch => ul.appendChild(makeChannelRow(ch, true)));
+      resultsRoot.appendChild(ul);
+    }
+    groupsRoot.style.display = 'none';
+    resultsRoot.style.display = '';
+  });
+}
+
+// وظائف المشغل
+function playChannel(channel) {
+  const player = document.getElementById('audioPlayer');
+  const playerTitle = document.getElementById('playerTitle');
+  const playerLogo = document.getElementById('playerLogo');
+  const playIcon = document.getElementById('playIcon');
+
+  // تحديث معلومات المشغل
+  playerTitle.textContent = channel.name;
+  
+  // تحديث الشعار
+  playerLogo.innerHTML = '';
+  if (channel.logo) {
+    const img = document.createElement('img');
+    img.src = channel.logo;
+    img.alt = channel.name;
+    img.onerror = function() {
+      this.style.display = 'none';
+      playerLogo.innerHTML = `<span>${channel.name.charAt(0).toUpperCase() || 'TV'}</span>`;
+    };
+    playerLogo.appendChild(img);
+  } else {
+    playerLogo.innerHTML = `<span>${channel.name.charAt(0).toUpperCase() || 'TV'}</span>`;
+  }
+
+  // إيقاف الصوت الحالي أولاً
+  currentAudio.pause();
+  currentAudio.src = '';
+  
+  // تعيين مصدر الصوت الجديد
+  currentAudio.src = channel.url;
+  
+  // إعداد قائمة التشغيل الحالية
+  currentPlaylist = allChannelsFlat;
+  currentChannelIndex = currentPlaylist.findIndex(ch => ch.url === channel.url);
+  
+  // إظهار المشغل
+  player.classList.add('player-active');
+  
+  // محاولة التشغيل مع معالجة الأخطاء
+  const playPromise = currentAudio.play();
+  
+  if (playPromise !== undefined) {
+    playPromise.then(() => {
+      isPlaying = true;
+      playIcon.innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
+      console.log('تم تشغيل القناة بنجاح:', channel.name);
+    }).catch(err => {
+      console.error('خطأ في التشغيل:', err);
+      // تم إزالة الانتقال التلقائي عند الخطأ
+    });
+  }
+}
+
+function togglePlay() {
+  const playIcon = document.getElementById('playIcon');
+  
+  if (isPlaying) {
+    currentAudio.pause();
+    playIcon.innerHTML = '<path d="M8 5v14l11-7z"/>';
+    isPlaying = false;
+  } else {
+    currentAudio.play().then(() => {
+      playIcon.innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
+      isPlaying = true;
+    }).catch(err => {
+      console.error('خطأ في التشغيل:', err);
+    });
+  }
+}
+
+function playNext() {
+  if (currentPlaylist.length === 0) return;
+  
+  try {
+    currentChannelIndex = (currentChannelIndex + 1) % currentPlaylist.length;
+    const nextChannel = currentPlaylist[currentChannelIndex];
+    console.log('الانتقال إلى القناة التالية:', nextChannel.name);
+    playChannel(nextChannel);
+  } catch (error) {
+    console.error('خطأ في playNext:', error);
+  }
+}
+
+function playPrevious() {
+  if (currentPlaylist.length === 0) return;
+  
+  currentChannelIndex = (currentChannelIndex - 1 + currentPlaylist.length) % currentPlaylist.length;
+  const prevChannel = currentPlaylist[currentChannelIndex];
+  playChannel(prevChannel);
+}
+
+function closePlayer() {
+  const player = document.getElementById('audioPlayer');
+  const playIcon = document.getElementById('playIcon');
+  
+  currentAudio.pause();
+  currentAudio.src = '';
+  isPlaying = false;
+  playIcon.innerHTML = '<path d="M8 5v14l11-7z"/>';
+  player.classList.remove('player-active');
+}
+
+function setupAudioEvents() {
+  currentAudio.addEventListener('ended', () => {
+    // تشغيل التالية تلقائياً عند الانتهاء فقط
+    console.log('انتهى التشغيل، الانتقال إلى القناة التالية');
+    playNext();
+  });
+
+  currentAudio.addEventListener('pause', () => {
+    isPlaying = false;
+    document.getElementById('playIcon').innerHTML = '<path d="M8 5v14l11-7z"/>';
+  });
+
+  currentAudio.addEventListener('play', () => {
+    isPlaying = true;
+    document.getElementById('playIcon').innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
+  });
+
+  currentAudio.addEventListener('error', (e) => {
+    console.error('خطأ في الصوت:', e);
+    // تم إزالة الانتقال التلقائي عند الخطأ
+  });
+
+  // إضافة مستمع للأحداث الإضافية لتحسين الموثوقية
+  currentAudio.addEventListener('loadstart', () => {
+    console.log('بدء تحميل الصوت');
+  });
+
+  currentAudio.addEventListener('canplay', () => {
+    console.log('الصوت جاهز للتشغيل');
+  });
+}
+
+// دالة لتحديث حالة الرسالة المنبثقة
+function updatePromotionStatus(action) {
+  const currentStatus = localStorage.getItem('appPromotionStatus');
+  
+  if (action === 'downloaded') {
+    // إذا حمل التطبيق، لا تظهر الرسالة مرة أخرى
+    localStorage.setItem('appPromotionStatus', 'downloaded');
+  } else if (action === 'seen') {
+    // إذا ظهرت الرسالة، تحديث العداد والتاريخ
+    let statusData;
+    
+    if (currentStatus && currentStatus !== 'downloaded') {
+      statusData = JSON.parse(currentStatus);
+      statusData.count += 1;
+      statusData.lastSeen = Date.now();
+    } else {
+      statusData = {
+        count: 1,
+        lastSeen: Date.now()
+      };
+    }
+    
+    localStorage.setItem('appPromotionStatus', JSON.stringify(statusData));
+  } else if (action === 'permanent_close') {
+    // إذا أغلق المستخدم الرسالة بشكل دائم
+    const statusData = {
+      count: 3, // تعيين العدد إلى 3 لمنع الظهور مرة أخرى
+      lastSeen: Date.now()
+    };
+    localStorage.setItem('appPromotionStatus', JSON.stringify(statusData));
+  }
+}
+
+// دالة لعرض رسالة الترويج لمستخدمي أندرويد فقط
+function showAppPromotion() {
+  // التحقق إذا كان المستخدم يستخدم أندرويد
+  const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+  const isAndroid = /android/i.test(userAgent);
+  
+  if (!isAndroid) return; // الخروج إذا لم يكن أندرويد
+  
+  // التحقق من حالة المستخدم مع الرسالة
+  const promotionStatus = localStorage.getItem('appPromotionStatus');
+  
+  // إذا كان المستخدم قد حمل التطبيق من قبل، لا تظهر الرسالة
+  if (promotionStatus === 'downloaded') {
+    return;
+  }
+  
+  // إذا كان المستخدم قد أغلق الرسالة بشكل دائم
+  if (promotionStatus && promotionStatus !== 'downloaded') {
+    const statusData = JSON.parse(promotionStatus);
+    
+    // إذا ظهرت الرسالة 3 مرات أو أكثر، لا تظهر مرة أخرى
+    if (statusData.count >= 3) {
+      return;
+    }
+    
+    // حساب الأيام منذ آخر ظهور
+    const now = Date.now();
+    const daysSinceLastShow = (now - statusData.lastSeen) / (1000 * 60 * 60 * 24);
+    
+    // تحديد فترات الظهور بناءً على عدد المرات السابقة
+    let daysToWait = 3; // افتراضي 3 أيام
+    
+    if (statusData.count === 1) {
+      daysToWait = 3; // المرة الأولى: تظهر بعد 3 أيام
+    } else if (statusData.count === 2) {
+      daysToWait = 7; // المرة الثانية: تظهر بعد أسبوع
+    }
+    
+    // إذا مر وقت أقل من المطلوب، لا تظهر الرسالة
+    if (daysSinceLastShow < daysToWait) {
+      return;
+    }
+  }
+  
+  // عرض الرسالة بعد تأخير 5 ثواني
+  setTimeout(() => {
+    const promotion = document.getElementById('appPromotion');
+    if (promotion) {
+      promotion.style.display = 'flex';
+      updatePromotionStatus('seen');
+    }
+  }, 5000);
+}
+
+// دالة لإغلاق الرسالة
+function closePromotion() {
+  const promotion = document.getElementById('appPromotion');
+  if (promotion) {
+    promotion.style.display = 'none';
+    // لا نقوم بتحديث الحالة هنا لأننا نريد متابعة العد
+  }
+}
+
+// دالة لإغلاق الرسالة بشكل دائم
+function closePromotionPermanently() {
+  const promotion = document.getElementById('appPromotion');
+  if (promotion) {
+    promotion.style.display = 'none';
+    // تعيين الحالة لإغلاق الرسالة بشكل دائم
+    updatePromotionStatus('permanent_close');
+  }
+}
+
+// دالة لتحميل التطبيق
+function downloadApp() {
+  // تحديث الحالة أن المستخدم حمل التطبيق
+  updatePromotionStatus('downloaded');
+  
+  // فتح رابط التطبيق مباشرة
+  window.open('https://tinyurl.com/Dhakkir', '_blank');
+  
+  // إغلاق الرسالة
+  const promotion = document.getElementById('appPromotion');
+  if (promotion) {
+    promotion.style.display = 'none';
+  }
+}
+
+// بدء التحميل عند فتح الصفحة
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>

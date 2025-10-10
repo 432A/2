@@ -384,7 +384,7 @@
     </div>
     <div id="loadingIndicator" class="loading" style="display:none">
       <div class="spinner"></div>
-      <div>جاري تحميل القنوات...</div>
+      <div>جاري تحميل القائمة...</div>
     </div>
     <div id="groupsRoot"></div>
     <div id="resultsRoot" class="results" style="display:none"></div>
@@ -643,7 +643,7 @@ function advancedSearch(query) {
   
   if (words.length === 0) return results;
   
-  // البحث في جميع المجلدات والقنوات
+  // البحث في جميع المجلدات والقائمة
   for (const groupName in groupsData) {
     const cleanGroupName = cleanText(groupName);
     

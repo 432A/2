@@ -392,21 +392,18 @@
     <div id="groupsRoot"></div>
     <div id="resultsRoot" class="results" style="display:none"></div>
         </div> 
-      <!-- التليجرام ---------> 
 <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Telegram Element - اليسار</title>
     <style>
-        /* الخط العربي */
+        
         @import url('https://fonts.googleapis.com/css2?family=Almarai:wght@700&display=swap');
         
-        /* الأنيميشن */
+        
         .pulse { animation: pulse 2s infinite }
         @keyframes btnun-what { 10% { transform: translate(0,200px) } 50% { transform: translate(0,-40px) } 70% { transform: scale(1.1) } }
         @keyframes pulse { 50% { transform: scale(1.1) } }
         @keyframes blink { 50% { opacity: 0 } from { opacity: 1 } to { opacity: 1 } }
-        
-        /* العنصر الرئيسي */
+    
         .messanger {
             background-color: #fff;
             border-radius: 5px;
@@ -419,7 +416,7 @@
             padding: 5px;
             pointer-events: none;
             position: fixed;
-            left: 20px; /* تغيير من right إلى left */
+            left: 20px; 
             transition: all 0.2s;
             width: 50px;
             z-index: 999;
@@ -451,7 +448,7 @@
             -ms-flex-positive: 1;
             -webkit-box-flex: 1;
             flex-grow: 1;
-            margin-right: 10px; /* تغيير من margin-left إلى margin-right */
+            margin-right: 10px; 
             opacity: 0;
             pointer-events: none;
             transition: opacity 0.2s;
@@ -466,7 +463,7 @@
             display: flex;
             overflow: hidden;
             white-space: nowrap;
-            flex-direction: row-reverse; /* عكس اتجاه العناصر الداخلية */
+            flex-direction: row-reverse; 
         }
         
         .messanger__text {

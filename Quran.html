@@ -942,7 +942,6 @@ function makeChannelRow(ch, showGroup = false) {
   const t = document.createElement('div'); 
   t.className = 'ch-title'; 
   
-  // إضافة اسم المجموعة إذا كان showGroup = true
   if (showGroup) {
     t.textContent = `${ch.group} | ${ch.name}`;
   } else {
@@ -962,7 +961,7 @@ function setupSearch(){
   const resultsRoot = document.getElementById('resultsRoot');
 
   input.addEventListener('input', ()=>{
-    const q = input.value.trim(); // استخدام النص الأصلي بدون تنظيف
+    const q = input.value.trim(); 
     if (!q){
       resultsRoot.style.display = 'none'; 
       groupsRoot.style.display = '';
@@ -971,8 +970,7 @@ function setupSearch(){
     }
     
     let matches = advancedSearch(q);
-    
-    // ترتيب النتائج حسب مدى التطابق
+
     matches = sortSearchResults(matches, q);
     
     resultsRoot.innerHTML = '';
@@ -990,17 +988,14 @@ function setupSearch(){
   });
 }
 
-// وظائف المشغل
 function playChannel(channel) {
   const player = document.getElementById('audioPlayer');
   const playerTitle = document.getElementById('playerTitle');
   const playerLogo = document.getElementById('playerLogo');
   const playIcon = document.getElementById('playIcon');
 
-  // تحديث معلومات المشغل
   playerTitle.textContent = channel.name;
   
-  // تحديث الشعار
   playerLogo.innerHTML = '';
   if (channel.logo) {
     const img = document.createElement('img');
@@ -1015,7 +1010,6 @@ function playChannel(channel) {
     playerLogo.innerHTML = `<span>${channel.name.charAt(0).toUpperCase() || 'TV'}</span>`;
   }
 
-  // إيقاف الصوت الحالي أولاً
   currentAudio.pause();
   currentAudio.src = '';
   
@@ -1125,10 +1119,9 @@ function updatePromotionStatus(action) {
   const currentStatus = localStorage.getItem('appPromotionStatus');
   
   if (action === 'downloaded') {
-    // إذا حمل التطبيق، لا تظهر الرسالة مرة أخرى
+      
     localStorage.setItem('appPromotionStatus', 'downloaded');
   } else if (action === 'seen') {
-    // إذا ظهرت الرسالة، تحديث العداد والتاريخ
     let statusData;
     
     if (currentStatus && currentStatus !== 'downloaded') {

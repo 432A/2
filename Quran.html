@@ -539,7 +539,6 @@
     </style>
 </head>
 <body>
-    <!-- التليجرام ---------> 
     <svg style="display:none"> 
         <defs> 
             <symbol id="telegramfill" viewbox="0 0 100 100"> 
@@ -565,10 +564,9 @@
             </div> 
         </a> 
     </div>
-    <!-- التليجرام --------->
     
     <script>
-        // تفعيل العنصر عند تحميل الصفحة
+         
         document.addEventListener('DOMContentLoaded', function() {
             const telegramElement = document.querySelector('.telegram-luna');
             telegramElement.classList.add('is-active');
@@ -577,7 +575,6 @@
 
   </div>
 
-  <!-- مشغل الصوت -->
   <div id="audioPlayer" class="audio-player">
     <button class="close-btn" onclick="closePlayer()">✕</button>
     <div class="player-info">
@@ -606,7 +603,6 @@
     <audio id="audioElement" preload="metadata"></audio>
   </div>
 
-  <!-- رسالة الترويج للتطبيق -->
   <div id="appPromotion" class="app-promotion" style="display: none;">
     <div class="promotion-content">
       <button class="promotion-close" onclick="closePromotionPermanently()">✕</button>

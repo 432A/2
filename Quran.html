@@ -1144,24 +1144,21 @@ function updatePromotionStatus(action) {
     
     localStorage.setItem('appPromotionStatus', JSON.stringify(statusData));
   } else if (action === 'permanent_close') {
-    // إذا أغلق المستخدم الرسالة بشكل دائم
+      
     const statusData = {
-      count: 3, // تعيين العدد إلى 3 لمنع الظهور مرة أخرى
+      count: 3, 
       lastSeen: Date.now()
     };
     localStorage.setItem('appPromotionStatus', JSON.stringify(statusData));
   }
 }
 
-// دالة لعرض رسالة الترويج لمستخدمي أندرويد فقط
 function showAppPromotion() {
-  // التحقق إذا كان المستخدم يستخدم أندرويد
   const userAgent = navigator.userAgent || navigator.vendor || window.opera;
   const isAndroid = /android/i.test(userAgent);
   
-  if (!isAndroid) return; // الخروج إذا لم يكن أندرويد
+  if (!isAndroid) return; 
   
-  // التحقق من حالة المستخدم مع الرسالة
   const promotionStatus = localStorage.getItem('appPromotionStatus');
   
   if (promotionStatus === 'downloaded') {
@@ -1200,41 +1197,32 @@ function showAppPromotion() {
   }, 5000);
 }
 
-// دالة لإغلاق الرسالة
 function closePromotion() {
   const promotion = document.getElementById('appPromotion');
   if (promotion) {
     promotion.style.display = 'none';
-    // لا نقوم بتحديث الحالة هنا لأننا نريد متابعة العد
   }
 }
 
-// دالة لإغلاق الرسالة بشكل دائم
 function closePromotionPermanently() {
   const promotion = document.getElementById('appPromotion');
   if (promotion) {
     promotion.style.display = 'none';
-    // تعيين الحالة لإغلاق الرسالة بشكل دائم
     updatePromotionStatus('permanent_close');
   }
 }
 
-// دالة لتحميل التطبيق
 function downloadApp() {
-  // تحديث الحالة أن المستخدم حمل التطبيق
-  updatePromotionStatus('downloaded');
   
-  // فتح رابط التطبيق مباشرة
+  updatePromotionStatus('downloaded');
   window.open('https://tinyurl.com/Dhakkir', '_blank');
   
-  // إغلاق الرسالة
   const promotion = document.getElementById('appPromotion');
   if (promotion) {
     promotion.style.display = 'none';
   }
 }
 
-// بدء التحميل عند فتح الصفحة
 document.addEventListener('DOMContentLoaded', init);
 </script>
 </body>

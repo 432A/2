@@ -1019,17 +1019,14 @@ function playChannel(channel) {
   currentAudio.pause();
   currentAudio.src = '';
   
-  // تعيين مصدر الصوت الجديد
   currentAudio.src = channel.url;
-  
-  // إعداد قائمة التشغيل الحالية
+     
   currentPlaylist = allChannelsFlat;
   currentChannelIndex = currentPlaylist.findIndex(ch => ch.url === channel.url);
   
-  // إظهار المشغل
   player.classList.add('player-active');
-  
-  // محاولة التشغيل مع معالجة الأخطاء
+
+   
   const playPromise = currentAudio.play();
   
   if (playPromise !== undefined) {
@@ -1039,7 +1036,7 @@ function playChannel(channel) {
       console.log('تم تشغيل القناة بنجاح:', channel.name);
     }).catch(err => {
       console.error('خطأ في التشغيل:', err);
-      // تم إزالة الانتقال التلقائي عند الخطأ
+      
     });
   }
 }
@@ -1095,7 +1092,7 @@ function closePlayer() {
 
 function setupAudioEvents() {
   currentAudio.addEventListener('ended', () => {
-    // تشغيل التالية تلقائياً عند الانتهاء فقط
+ 
     console.log('انتهى التشغيل، الانتقال إلى القناة التالية');
     playNext();
   });
@@ -1112,10 +1109,9 @@ function setupAudioEvents() {
 
   currentAudio.addEventListener('error', (e) => {
     console.error('خطأ في الصوت:', e);
-    // تم إزالة الانتقال التلقائي عند الخطأ
+
   });
 
-  // إضافة مستمع للأحداث الإضافية لتحسين الموثوقية
   currentAudio.addEventListener('loadstart', () => {
     console.log('بدء تحميل الصوت');
   });
@@ -1125,7 +1121,6 @@ function setupAudioEvents() {
   });
 }
 
-// دالة لتحديث حالة الرسالة المنبثقة
 function updatePromotionStatus(action) {
   const currentStatus = localStorage.getItem('appPromotionStatus');
   
@@ -1169,40 +1164,33 @@ function showAppPromotion() {
   // التحقق من حالة المستخدم مع الرسالة
   const promotionStatus = localStorage.getItem('appPromotionStatus');
   
-  // إذا كان المستخدم قد حمل التطبيق من قبل، لا تظهر الرسالة
   if (promotionStatus === 'downloaded') {
     return;
   }
   
-  // إذا كان المستخدم قد أغلق الرسالة بشكل دائم
   if (promotionStatus && promotionStatus !== 'downloaded') {
     const statusData = JSON.parse(promotionStatus);
     
-    // إذا ظهرت الرسالة 3 مرات أو أكثر، لا تظهر مرة أخرى
     if (statusData.count >= 3) {
       return;
     }
     
-    // حساب الأيام منذ آخر ظهور
     const now = Date.now();
     const daysSinceLastShow = (now - statusData.lastSeen) / (1000 * 60 * 60 * 24);
     
-    // تحديد فترات الظهور بناءً على عدد المرات السابقة
-    let daysToWait = 3; // افتراضي 3 أيام
+    let daysToWait = 3; 
     
     if (statusData.count === 1) {
-      daysToWait = 3; // المرة الأولى: تظهر بعد 3 أيام
+      daysToWait = 3; 
     } else if (statusData.count === 2) {
-      daysToWait = 7; // المرة الثانية: تظهر بعد أسبوع
+      daysToWait = 7;  
     }
     
-    // إذا مر وقت أقل من المطلوب، لا تظهر الرسالة
     if (daysSinceLastShow < daysToWait) {
       return;
     }
   }
   
-  // عرض الرسالة بعد تأخير 5 ثواني
   setTimeout(() => {
     const promotion = document.getElementById('appPromotion');
     if (promotion) {

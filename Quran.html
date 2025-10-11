@@ -273,8 +273,6 @@
     width: 28px;
     height: 28px;
   }
-
-  /* تنسيق الرسالة المنبثقة */
   .app-promotion {
     position: fixed;
     top: 0;
@@ -575,7 +573,7 @@
       <div class="player-logo" id="playerLogo">
         <span>TV</span>
       </div>
-      <div class="player-title" id="playerTitle">إسم القناة</div>
+      <div class="player-title" id="playerTitle">إسم الإذاعة</div>
     </div>
     <div class="player-controls">
       <button class="control-btn" onclick="playPrevious()">
@@ -970,7 +968,7 @@ function playChannel(channel) {
     playPromise.then(() => {
       isPlaying = true;
       playIcon.innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
-      console.log('تم تشغيل القناة بنجاح:', channel.name);
+      console.log('تم تشغيل الإذاعة بنجاح:', channel.name);
     }).catch(err => {
       console.error('خطأ في التشغيل:', err);
       
@@ -1001,7 +999,7 @@ function playNext() {
   try {
     currentChannelIndex = (currentChannelIndex + 1) % currentPlaylist.length;
     const nextChannel = currentPlaylist[currentChannelIndex];
-    console.log('الانتقال إلى القناة التالية:', nextChannel.name);
+    console.log('الانتقال إلى الإذاعة التالية:', nextChannel.name);
     playChannel(nextChannel);
   } catch (error) {
     console.error('خطأ في playNext:', error);
@@ -1030,7 +1028,7 @@ function closePlayer() {
 function setupAudioEvents() {
   currentAudio.addEventListener('ended', () => {
  
-    console.log('انتهى التشغيل، الانتقال إلى القناة التالية');
+    console.log('انتهى التشغيل، الانتقال إلى الإذاعة التالية');
     playNext();
   });
 

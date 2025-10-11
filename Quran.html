@@ -770,42 +770,26 @@ function cleanText(t){
     .toLowerCase();
 }
 
-// دالة بحث متقدمة تعرض النتائج تلقائياً
 function advancedSearch(query) {
   const results = [];
   const cleanQuery = cleanText(query);
-  
-  // تقسيم البحث إلى كلمات
   const words = cleanQuery.split(/\s+/).filter(word => word.length > 0);
-  
   if (words.length === 0) return results;
-  
-  // البحث في جميع المجلدات والقائمة
   for (const groupName in groupsData) {
     const cleanGroupName = cleanText(groupName);
-    
-    // إذا كانت جميع كلمات البحث موجودة في اسم المجلد
     const allWordsInGroup = words.every(word => cleanGroupName.includes(word));
-    
-    // إذا كانت إحدى كلمات البحث تطابق اسم المجلد
     const someWordInGroup = words.some(word => cleanGroupName.includes(word));
     
     if (allWordsInGroup) {
-      // إذا تطابقت جميع الكلمات مع اسم المجلد، عرض كل محتوياته
       results.push(...groupsData[groupName]);
     } else if (someWordInGroup) {
-      // إذا تطابقت بعض الكلمات مع اسم المجلد، البحث في قنواته
       for (const channel of groupsData[groupName]) {
         const cleanChannelName = cleanText(channel.name);
-        
-        // البحث عن الكلمات المتبقية في اسم القناة
         const remainingWords = words.filter(word => !cleanGroupName.includes(word));
         
         if (remainingWords.length === 0) {
-          // إذا لم تتبقى كلمات، عرض جميع قنوات المجلد
           results.push(channel);
         } else {
-          // إذا تبقى كلمات، التحقق من تطابقها مع اسم القناة
           const allRemainingInChannel = remainingWords.every(word => 
             cleanChannelName.includes(word)
           );
@@ -816,11 +800,9 @@ function advancedSearch(query) {
         }
       }
     } else {
-      // إذا لم يتطابق أي كلمة مع اسم المجلد، البحث في قنواته فقط
+      
       for (const channel of groupsData[groupName]) {
         const cleanChannelName = cleanText(channel.name);
-        
-        // التحقق إذا كانت جميع كلمات البحث موجودة في اسم القناة
         const allWordsInChannel = words.every(word => cleanChannelName.includes(word));
         
         if (allWordsInChannel) {
@@ -830,11 +812,9 @@ function advancedSearch(query) {
     }
   }
   
-  // إزالة التكرارات
   return [...new Set(results)];
 }
 
-// دالة لترتيب النتائج حسب مدى التطابق
 function sortSearchResults(results, query) {
   const cleanQuery = cleanText(query);
   const words = cleanQuery.split(/\s+/);
@@ -844,12 +824,8 @@ function sortSearchResults(results, query) {
     const aName = cleanText(a.name);
     const bGroup = cleanText(b.group);
     const bName = cleanText(b.name);
-    
-    // حساب نقاط التطابق للعنصر أ
     let aScore = 0;
     let bScore = 0;
-    
-    // نقاط إضافية للتطابق الكامل مع المجلد
     words.forEach(word => {
       if (aGroup.includes(word)) aScore += 2;
       if (bGroup.includes(word)) bScore += 2;
@@ -911,7 +887,6 @@ function renderGroups(){
     title.textContent = g;
     const ul = document.createElement('ul');
     ul.className = 'chlist';
-    // تمرير false لعدم عرض اسم المجموعة في القائمة الرئيسية
     groupsData[g].forEach(ch => ul.appendChild(makeChannelRow(ch, false)));
     title.addEventListener('click', ()=> {
       ul.style.display = ul.style.display === 'block' ? 'none' : 'block';

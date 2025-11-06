@@ -9164,19 +9164,19 @@ let currentDate=new Date();currentDate.setHours(0,0,0,0);
 function formatDate(date){return date.toLocaleDateString('ar-AR',{weekday:'long',year:'numeric',month:'long',day:'numeric'});}
 function getLocalYYYYMMDD(date){return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`;}
 function convertGMTToLocalTime(gmtTime){return new Date(gmtTime).toLocaleTimeString('ar-AR',{hour:'2-digit',minute:'2-digit',hour12:false});}
-function getMatchStatus(m){
-  const now=new Date(),
-        start=new Date(m.gmtTime),
-        end=new Date(start.getTime()+120*60*1000),
-        diff=start-now;
+function getMatchStatus(m) {
+  const now = new Date();
+  const start = new Date(m.gmtTime);
+  const end = new Date(start.getTime() + 120 * 60 * 1000);
+  
   if(m.State){
-  if(m.State==="A") return "postponed";   // مؤجلة
-  if(m.State==="B") return "stopped";     // متوقفة
-  if(m.State==="C") return "canceled";    // ملغاة
-}
-if(now>=end)return"ended";
+    if(m.State==="A") return "postponed";
+    if(m.State==="B") return "stopped";
+    if(m.State==="C") return "canceled";
+  }
+  if(now>=end)return"ended";
   if(now>=start&&now<end)return"live";
-  if(diff>0&&diff<=60000)return"countdown";
+  if((start-now)>0&&(start-now)<=60000)return"countdown";
   return"upcoming";
 }
 
@@ -9220,7 +9220,29 @@ function renderMatches(){
   dateInput.value=displayedDate;
   container.innerHTML="";
   
-  let matchesForDate=allMatches.filter(m=>getLocalYYYYMMDD(new Date(m.gmtTime))===displayedDate);
+  // الحصول على التاريخ الحالي الفعلي
+  const today = new Date();
+  today.setHours(0,0,0,0);
+  
+  let matchesForDate=allMatches.filter(m=>{
+    const matchDate=getLocalYYYYMMDD(new Date(m.gmtTime));
+    const matchStatus=getMatchStatus(m);
+    
+    // إذا كنا نعرض التاريخ الحالي
+    if(displayedDate===getLocalYYYYMMDD(today)){
+      return matchDate===displayedDate || 
+             (matchStatus==="live" && matchDate===getLocalYYYYMMDD(new Date(today.getTime()-24*60*60*1000)));
+    }
+    // إذا كنا نعرض تاريخاً في المستقبل
+    else if(new Date(displayedDate)>today){
+      return matchDate===displayedDate;
+    }
+    // إذا كنا نعرض تاريخاً في الماضي
+    else{
+      return matchDate===displayedDate;
+    }
+  });
+  
   
   if (viewMode === 'liveOnly') {
     matchesForDate = matchesForDate.filter(m => getMatchStatus(m) === 'live');

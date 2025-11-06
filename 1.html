@@ -9164,77 +9164,76 @@ let currentDate=new Date();currentDate.setHours(0,0,0,0);
 function formatDate(date){return date.toLocaleDateString('ar-AR',{weekday:'long',year:'numeric',month:'long',day:'numeric'});}
 function getLocalYYYYMMDD(date){return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`;}
 function convertGMTToLocalTime(gmtTime){return new Date(gmtTime).toLocaleTimeString('ar-AR',{hour:'2-digit',minute:'2-digit',hour12:false});}
-function getMatchStatus(m){
-  const now=new Date(),
-        start=new Date(m.gmtTime),
-        end=new Date(start.getTime()+120*60*1000),
-        diff=start-now;
-  if(m.State){
-  if(m.State==="A") return "postponed";   // مؤجلة
-  if(m.State==="B") return "stopped";     // متوقفة
-  if(m.State==="C") return "canceled";    // ملغاة
-}
-if(now>=end)return"ended";
-  if(now>=start&&now<end)return"live";
-  if(diff>0&&diff<=60000)return"countdown";
-  return"upcoming";
-}
-
-function toggleSettingsMenu() {
-  settingsMenu.classList.toggle('show');
-}
-
-function changeViewMode(mode) {
-  viewMode = mode;
-  localStorage.setItem("viewMode", mode);
+// استبدال دالة getMatchStatus الحالية بهذه الدالة المحسنة
+function getMatchStatus(m) {
+  const now = new Date();
+  const start = new Date(m.gmtTime);
+  const end = new Date(start.getTime() + 120 * 60 * 1000); // إضافة ساعتين لنهاية المباراة
   
-  document.querySelectorAll('.settings-item').forEach(item => {
-    item.classList.remove('active');
-  });
-  document.querySelector(`.settings-item[onclick="changeViewMode('${mode}')"]`).classList.add('active');
-  
-  renderMatches();
-  settingsMenu.classList.remove('show');
-}
-
-function toggleLeagueOrder(leagueName) {
-  const currentIndex = leagueOrder.indexOf(leagueName);
-  
-  if (currentIndex === 0) {
-    // إذا كانت البطولة في الأعلى، انقلها للأسفل
-    leagueOrder.splice(currentIndex, 1);
-    leagueOrder.push(leagueName);
-  } else {
-    // إذا كانت البطولة ليست في الأعلى، انقلها للأعلى
-    leagueOrder.splice(currentIndex, 1);
-    leagueOrder.unshift(leagueName);
+  // إذا كانت المباراة لها حالة خاصة (تأجيل، إلغاء، إلخ)
+  if (m.State) {
+    if (m.State === "A") return "postponed";
+    if (m.State === "B") return "stopped";
+    if (m.State === "C") return "canceled";
   }
   
-  localStorage.setItem("leagueOrder", JSON.stringify(leagueOrder));
-  renderMatches();
+  // إذا انتهت المباراة
+  if (now >= end) return "ended";
+  
+  // إذا كانت المباراة جارية
+  if (now >= start && now < end) return "live";
+  
+  // إذا كانت على وشك البدء (خلال دقيقة)
+  if ((start - now) > 0 && (start - now) <= 60000) return "countdown";
+  
+  // إذا لم تبدأ بعد
+  return "upcoming";
 }
 
-function renderMatches(){
-  const displayedDate=getLocalYYYYMMDD(currentDate);
-  dateDisplay.textContent=formatDate(currentDate);
-  dateInput.value=displayedDate;
-  container.innerHTML="";
+// استبدال دالة renderMatches الحالية بهذه الدالة المحسنة
+function renderMatches() {
+  const displayedDate = getLocalYYYYMMDD(currentDate);
+  dateDisplay.textContent = formatDate(currentDate);
+  dateInput.value = displayedDate;
+  container.innerHTML = "";
   
-  let matchesForDate=allMatches.filter(m=>getLocalYYYYMMDD(new Date(m.gmtTime))===displayedDate);
+  // الحصول على التاريخ الحالي الفعلي (بدون ساعات)
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  
+  let matchesForDate = allMatches.filter(m => {
+    const matchDate = getLocalYYYYMMDD(new Date(m.gmtTime));
+    const matchStatus = getMatchStatus(m);
+    
+    // إذا كنا نعرض التاريخ الحالي، نعرض جميع المباريات التي تبدأ فيه + المباريات الجارية التي بدأت في الأمس
+    if (displayedDate === getLocalYYYYMMDD(today)) {
+      return matchDate === displayedDate || 
+             (matchStatus === "live" && matchDate === getLocalYYYYMMDD(new Date(today.getTime() - 24 * 60 * 60 * 1000)));
+    }
+    // إذا كنا نعرض تاريخاً في المستقبل، نعرض فقط المباريات التي تبدأ فيه
+    else if (new Date(displayedDate) > today) {
+      return matchDate === displayedDate;
+    }
+    // إذا كنا نعرض تاريخاً في الماضي، نعرض فقط المباريات التي بدأت فيه (حتى لو انتهت في تاريخ لاحق)
+    else {
+      return matchDate === displayedDate;
+    }
+  });
   
   if (viewMode === 'liveOnly') {
     matchesForDate = matchesForDate.filter(m => getMatchStatus(m) === 'live');
     if (matchesForDate.length === 0) {
-      container.innerHTML=`<div class="no-matches">لا توجد أي مباراة جارية الآن، قم بتغيير طريقة عرض المباريات</div>`;
+      container.innerHTML = `<div class="no-matches">لا توجد أي مباراة جارية الآن، قم بتغيير طريقة عرض المباريات</div>`;
       return;
     }
   }
   
-  if(matchesForDate.length===0){
-    container.innerHTML=`<div class="no-matches">لا توجد مباريات في هذا التاريخ</div>`;
+  if (matchesForDate.length === 0) {
+    container.innerHTML = `<div class="no-matches">لا توجد مباريات في هذا التاريخ</div>`;
     return;
   }
   
+  // باقي الكود يبقى كما هو...
   if (viewMode === 'byTime') {
     // ترتيب المباريات حسب الوقت والحالة (المنتهية في الأسفل)
     matchesForDate.sort((a, b) => {
@@ -9259,25 +9258,26 @@ function renderMatches(){
     matchesForDate.forEach(m => {
       const status = getMatchStatus(m);
       let statusHTML =
-    status==="postponed" ? "<div class='time-status status-postponed'>تأجلت</div>" :
-    status==="stopped"   ? "<div class='time-status status-stopped'>توقفت</div>" :
-    status==="canceled"  ? "<div class='time-status status-canceled'>أُلغيت</div>" :
-    status==="ended"     ? "<div class='time-status status-ended'>انتهت</div>" :
-    status==="live"      ? "<div class='time-status status-live'>مباشر</div>" :
-    `<div class='time-status status-time'>${convertGMTToLocalTime(m.gmtTime)}</div>`;
+        status === "postponed" ? "<div class='time-status status-postponed'>تأجلت</div>" :
+        status === "stopped" ? "<div class='time-status status-stopped'>توقفت</div>" :
+        status === "canceled" ? "<div class='time-status status-canceled'>أُلغيت</div>" :
+        status === "ended" ? "<div class='time-status status-ended'>انتهت</div>" :
+        status === "live" ? "<div class='time-status status-live'>مباشر</div>" :
+        `<div class='time-status status-time'>${convertGMTToLocalTime(m.gmtTime)}</div>`;
+      
       const card = document.createElement("div");
       card.className = "match-card";
       if (status !== 'ended') {
-        card.onclick = () => { if(m.url) window.location.href = m.url; };
+        card.onclick = () => { if (m.url) window.location.href = m.url; };
       }
       card.innerHTML = `
         <div class="team">
-          <img src="${clubsData[m.team1]||defaultLogoUrl}">
+          <img src="${clubsData[m.team1] || defaultLogoUrl}">
           <div class="team-name">${m.team1}</div>
         </div>
         ${statusHTML}
         <div class="team" style="direction:ltr">
-          <img src="${clubsData[m.team2]||defaultLogoUrl}">
+          <img src="${clubsData[m.team2] || defaultLogoUrl}">
           <div class="team-name">${m.team2}</div>
         </div>
       `;
@@ -9288,9 +9288,10 @@ function renderMatches(){
     return;
   }
   
-  let grouped={};
-  matchesForDate.forEach(m=>(grouped[m.Lig]=grouped[m.Lig]||[]).push(m));
-  let leagues=Object.keys(grouped);
+  // باقي كود العرض حسب البطولات يبقى كما هو...
+  let grouped = {};
+  matchesForDate.forEach(m => (grouped[m.Lig] = grouped[m.Lig] || []).push(m));
+  let leagues = Object.keys(grouped);
   
   leagues.forEach(league => {
     if (!leagueOrder.includes(league)) {
@@ -9299,34 +9300,31 @@ function renderMatches(){
   });
   
   leagueOrder = leagueOrder.filter(league => leagues.includes(league));
-  
   localStorage.setItem("leagueOrder", JSON.stringify(leagueOrder));
   
-  leagues.sort((a,b)=>{
-    let ia=leagueOrder.indexOf(a);
-    let ib=leagueOrder.indexOf(b);
-    if(ia===-1)ia=999;
-    if(ib===-1)ib=999;
-    return ia-ib;
+  leagues.sort((a, b) => {
+    let ia = leagueOrder.indexOf(a);
+    let ib = leagueOrder.indexOf(b);
+    if (ia === -1) ia = 999;
+    if (ib === -1) ib = 999;
+    return ia - ib;
   });
 
-  leagues.forEach((league,index)=>{
-    const lCard=document.createElement("div");
-    lCard.className="league-card";
+  leagues.forEach((league, index) => {
+    const lCard = document.createElement("div");
+    lCard.className = "league-card";
     
-    const header=document.createElement("div");
-    header.className="league-header";
+    const header = document.createElement("div");
+    header.className = "league-header";
     
-    const title=document.createElement("div");
-    title.className="league-title";
-    title.innerHTML=`<img src="${leaguesData[league].logo||defaultLogoUrl}"><span>${league}</span>`;
+    const title = document.createElement("div");
+    title.className = "league-title";
+    title.innerHTML = `<img src="${leaguesData[league].logo || defaultLogoUrl}"><span>${league}</span>`;
 
-    // سهم واحد فقط
-    const arrow=document.createElement("div");
+    const arrow = document.createElement("div");
     arrow.className = "arrow";
     
-    // إذا كانت البطولة في الترتيب الأول، السهم يشير للأسفل، وإلا يشير للأعلى
-    if(index === 0) {
+    if (index === 0) {
       arrow.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"></path></svg>`;
     } else {
       arrow.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M7 14l5-5 5 5z"></path></svg>`;
@@ -9342,41 +9340,43 @@ function renderMatches(){
     lCard.appendChild(header);
 
     // ترتيب المباريات داخل البطولة
-  grouped[league].sort((a, b) => {
-  const statusA = getMatchStatus(a);
-  const statusB = getMatchStatus(b);
+    grouped[league].sort((a, b) => {
+      const statusA = getMatchStatus(a);
+      const statusB = getMatchStatus(b);
 
-  // المباريات المنتهية تنزل للأسفل
-  if (statusA === 'ended' && statusB !== 'ended') return 1;
-  if (statusA !== 'ended' && statusB === 'ended') return -1;
+      // المباريات المنتهية تنزل للأسفل
+      if (statusA === 'ended' && statusB !== 'ended') return 1;
+      if (statusA !== 'ended' && statusB === 'ended') return -1;
 
-  // لو الاتنين منتهية → رتب من الأحدث إلى الأقدم
-  if (statusA === 'ended' && statusB === 'ended') {
-    return new Date(b.gmtTime) - new Date(a.gmtTime);
-  }
+      // لو الاتنين منتهية → رتب من الأحدث إلى الأقدم
+      if (statusA === 'ended' && statusB === 'ended') {
+        return new Date(b.gmtTime) - new Date(a.gmtTime);
+      }
 
-  // غير منتهية → رتب من الأقدم إلى الأحدث
-  return new Date(a.gmtTime) - new Date(b.gmtTime);
-});
+      // غير منتهية → رتب من الأقدم إلى الأحدث
+      return new Date(a.gmtTime) - new Date(b.gmtTime);
+    });
 
-grouped[league].forEach(m=>{
-  const status=getMatchStatus(m);
-  let statusHTML =
-    status==="postponed" ? "<div class='time-status status-postponed'>تأجلت</div>" :
-    status==="stopped"   ? "<div class='time-status status-stopped'>توقفت</div>" :
-    status==="canceled"  ? "<div class='time-status status-canceled'>أُلغيت</div>" :
-    status==="ended"     ? "<div class='time-status status-ended'>انتهت</div>" :
-    status==="live"      ? "<div class='time-status status-live'>مباشر</div>" :
-    `<div class='time-status status-time'>${convertGMTToLocalTime(m.gmtTime)}</div>`;
-  const card=document.createElement("div");
-  card.className="match-card";
-  if (status !== 'ended') {
-    card.onclick=()=>{if(m.url)window.location.href=m.url;};
-  }
-  card.innerHTML=`<div class="team"><img src="${clubsData[m.team1]||defaultLogoUrl}"><div class="team-name">${m.team1}</div></div>${statusHTML}<div class="team" style="direction:ltr"><img src="${clubsData[m.team2]||defaultLogoUrl}"><div class="team-name">${m.team2}</div></div>`;
-  lCard.appendChild(card);
-});    
-container.appendChild(lCard);
+    grouped[league].forEach(m => {
+      const status = getMatchStatus(m);
+      let statusHTML =
+        status === "postponed" ? "<div class='time-status status-postponed'>تأجلت</div>" :
+        status === "stopped" ? "<div class='time-status status-stopped'>توقفت</div>" :
+        status === "canceled" ? "<div class='time-status status-canceled'>أُلغيت</div>" :
+        status === "ended" ? "<div class='time-status status-ended'>انتهت</div>" :
+        status === "live" ? "<div class='time-status status-live'>مباشر</div>" :
+        `<div class='time-status status-time'>${convertGMTToLocalTime(m.gmtTime)}</div>`;
+      
+      const card = document.createElement("div");
+      card.className = "match-card";
+      if (status !== 'ended') {
+        card.onclick = () => { if (m.url) window.location.href = m.url; };
+      }
+      card.innerHTML = `<div class="team"><img src="${clubsData[m.team1] || defaultLogoUrl}"><div class="team-name">${m.team1}</div></div>${statusHTML}<div class="team" style="direction:ltr"><img src="${clubsData[m.team2] || defaultLogoUrl}"><div class="team-name">${m.team2}</div></div>`;
+      lCard.appendChild(card);
+    });
+    
+    container.appendChild(lCard);
   });
 }
 

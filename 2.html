@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>قائمة فيديو عمودية</title>
+
+<style>
+    body {
+        background: #0A1630;
+        font-family: Arial, sans-serif;
+        padding: 20px;
+    }
+
+    .video-list {
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+    }
+
+    .video-item {
+        background: #E0E6F8;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 3px 7px rgba(0,0,0,0.1);
+        text-decoration: none;     /* إزالة التسطير */
+        color: #152347;
+    }
+
+    .thumb-container {
+        position: relative;
+    }
+
+    .thumb-container img {
+        width: 100%;
+        height: 220px;
+        object-fit: cover;
+    }
+
+    /* زر التشغيل */
+    .play-btn {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 60px;
+        height: 60px;
+        background: rgba(0,0,0,0.55);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .play-btn svg {
+        width: 32px;
+        fill: #fff;
+    }
+
+    /* العنوان + صورة البروفايل */
+    .video-info {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px;
+    }
+
+    .video-title {
+        font-size: 17px;
+        margin: 0;
+        font-weight: bold;
+        text-decoration: none; 
+        color: #152347;
+    }
+
+    .profile-img {
+        width: 34px;
+        height: 34px;
+        border-radius: 0%;
+        object-fit: cover;
+        
+    }
+</style>
+
+</head>
+<body>
+
+<div class="video-list">
+
+    <!-- الدوري الإسباني -->
+    <a href="https://nvtboo.vortexvisionworks.com/embed/8lt2Jwu7uGlaZ" class="video-item">
+        <div class="thumb-container">
+            <img src="https://img.btolat.com/2025/11/24/video/89221/l.jpg" alt="">
+            <div class="play-btn">
+                <svg viewBox="0 0 24 24">
+                    <path d="M8 5v14l11-7z"></path>
+                </svg>
+            </div>
+        </div>
+
+        <div class="video-info">
+            <h3 class="video-title">ملخص مباراة ريال مدريد ضد إلتشي 2 - 2</h3>
+            <img class="profile-img" src="https://imgs.ysscores.com/championship/48/8641690196626.png" alt="">
+        </div>
+    </a>
+
+
+    <!-- الدوري الإنجليزي -->
+    <a href="https://nvtboo.vortexvisionworks.com/embed/8lt2Jwu7uGlaZ" class="video-item">
+        <div class="thumb-container">
+            <img src="https://img.btolat.com/2025/11/23/video/89202/l.jpg" alt="">
+            <div class="play-btn">
+                <svg viewBox="0 0 24 24">
+                    <path d="M8 5v14l11-7z"></path>
+                </svg>
+            </div>
+        </div>
+
+        <div class="video-info">
+            <h3 class="video-title">ملخص مباراة أرسنال ضد توتنهام 4 - 1</h3>
+            <img class="profile-img" src="https://imgs.ysscores.com/championship/48/3411694791422.png" alt="">
+        </div>
+    </a>
+
+    <!-- يمكنك نسخ هذا البلوك لكل فيديو -->
+    <a href="https://nvtboo.vortexvisionworks.com/embed/8lt2Jwu7uGlaZ" class="video-item">
+        <div class="thumb-container">
+            <img src="https://img.btolat.com/2025/11/24/video/89221/l.jpg" alt="">
+            <div class="play-btn">
+                <svg viewBox="0 0 24 24">
+                    <path d="M8 5v14l11-7z"></path>
+                </svg>
+            </div>
+        </div>
+
+        <div class="video-info">
+            <h3 class="video-title">عنوان الفيديو الثاني</h3>
+            <img class="profile-img" src="https://imgs.ysscores.com/championship/48/8641690196626.png" alt="">
+        </div>
+    </a>
+
+</div>
+
+</body>
+</html>

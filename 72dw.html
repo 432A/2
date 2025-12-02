@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ترتيب الدوري الإنجليزي - مباشر</title>
+
+<style>
+    body {
+        margin: 0;
+        font-family: system-ui, sans-serif;
+        background: #0d1117;
+        color: #fff;
+        padding: 15px;
+    }
+
+    h2 {
+        margin: 0 0 10px;
+        font-size: 20px;
+        text-align: center;
+    }
+
+    .card {
+        background: #161b22;
+        padding: 12px;
+        border-radius: 12px;
+        box-shadow: 0 0 10px #0003;
+        max-width: 900px;
+        margin: auto;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 14px;
+    }
+
+    th, td {
+        padding: 8px;
+        border-bottom: 1px solid #222;
+        text-align: center;
+    }
+
+    th {
+        color: #9ca3af;
+        font-size: 13px;
+    }
+
+    .team {
+        display: flex;
+        align-items: center;
+        justify-content: right;
+        gap: 8px;
+    }
+
+    .team img {
+        width: 24px;
+        height: 24px;
+        object-fit: contain;
+    }
+
+    .update {
+        margin-top: 10px;
+        text-align: center;
+        color: #9ca3af;
+        font-size: 12px;
+    }
+
+    button {
+        padding: 6px 12px;
+        border: 1px solid #444;
+        background: #222;
+        color: white;
+        border-radius: 6px;
+        font-size: 13px;
+        margin-bottom: 12px;
+    }
+
+</style>
+</head>
+<body>
+
+<h2>ترتيب الدوري الإنجليزي الممتاز</h2>
+
+<div class="card">
+
+    <button onclick="loadStandings()">تحديث الآن</button>
+
+    <table>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th style="text-align:right">الفريق</th>
+                <th>لعب</th>
+                <th>فوز</th>
+                <th>تعادل</th>
+                <th>خسارة</th>
+                <th>نقاط</th>
+            </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+    </table>
+
+    <div class="update">آخر تحديث: <span id="time">---</span></div>
+</div>
+
+<script>
+async function loadStandings() {
+    const url = "https://api-football-standings.azharimm.dev/leagues/eng.1/standings";
+
+    const tbody = document.getElementById("tbody");
+    tbody.innerHTML = "<tr><td colspan='7'>جارِ التحميل...</td></tr>";
+
+    try {
+        const res = await fetch(url);
+        const data = await res.json();
+
+        const table = data.data.standings;
+
+        tbody.innerHTML = "";
+
+        table.forEach((team, index) => {
+            const row = `
+                <tr>
+                    <td>${index + 1}</td>
+                    <td>
+                        <div class="team">
+                            <img src="${team.team.logos[0].href}">
+                            <span>${team.team.name}</span>
+                        </div>
+                    </td>
+                    <td>${team.stats.find(s => s.name === "gamesPlayed").value}</td>
+                    <td>${team.stats.find(s => s.name === "wins").value}</td>
+                    <td>${team.stats.find(s => s.name === "ties").value}</td>
+                    <td>${team.stats.find(s => s.name === "losses").value}</td>
+                    <td><b>${team.stats.find(s => s.name === "points").value}</b></td>
+                </tr>
+            `;
+            tbody.innerHTML += row;
+        });
+
+        document.getElementById("time").textContent =
+            new Date().toLocaleString("ar-EG");
+
+    } catch (err) {
+        tbody.innerHTML = "<tr><td colspan='7'>حدث خطأ في جلب البيانات</td></tr>";
+        console.log(err);
+    }
+}
+
+loadStandings();
+setInterval(loadStandings, 60000); // تحديث كل دقيقة
+</script>
+
+</body>
+</html>

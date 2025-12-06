@@ -1422,7 +1422,10 @@ function renderVideos(list, reset=false) {
         item.innerHTML = `
             <div class="cover-container">
                 <img class="lazy" data-src="${v.cover}">
-            </div>
+                    <div class="play-btn">
+                        <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"></path></svg>
+                    </div>
+                </div>
             <div class="video-info">
                 <h3 class="video-title">${v.title}</h3>
                 <img class="League-img" src="${Leagues[v.League]}" style="height:28px;">

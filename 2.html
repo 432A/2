@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -116,6 +117,11 @@
         border-radius: 0%;
         object-fit: cover;
     }
+
+    #sentinel {
+        width: 100%;
+        height: 40px;
+        }
     * {
         -webkit-tap-highlight-color: transparent !important;
         -webkit-focus-ring-color: rgba(0,0,0,0) !important;
@@ -136,10 +142,10 @@
 <div id="noResults" class="no-results">لا توجد نتائج تطابق بحثك</div>
 
 <div class="video-list" id="videoList"></div>
+<div id="sentinel"></div>
 
 <script>
-
-    const videos = [
+const videos = [
 
 
 {title: "هدف الجزائر | البحرين 1 الجزائر 4",
@@ -1342,75 +1348,107 @@ cover: "https://pbs.twimg.com/media/G6Xbe3WXEAAIRS_.jpg",
 League: "أبطال أفريقيا"}
 
 
-    ];
 
-    const container = document.getElementById("videoList");
+];
+
 const Leagues = {
-"كأس ألمانيا": "https://imgs.ysscores.com/championship/150/1351691680796.png",
-        "أبطال أفريقيا": "https://imgs.ysscores.com/championship/150/5061696621582.png",
-        "كأس السعودية": "https://imgs.ysscores.com/championship/150/5141711141225.png",
-        "أبطال آسيا": "https://imgs.ysscores.com/championship/128/7731723924630.png",
-        "أبطال أوروبا": "https://imgs.ysscores.com/championship/150/5171696546919.png",
-        "الكونفدرالية": "https://imgs.ysscores.com/championship/150/1931696627235.png",
-        "أبطال آسيا 2": "https://imgs.ysscores.com/championship/150/9381723924846.png",
-   "الدوري الإيطالي": "https://imgs.ysscores.com/championship/150/6281692568873.png",
-   "الدوري الإنجليزي": "https://imgs.ysscores.com/championship/48/3411694791422.png",
-   "الدوري الإسباني": "https://imgs.ysscores.com/championship/48/8641690196626.png",
-   "الدوري الفرنسي": "https://imgs.ysscores.com/championship/128/9551719862665.png",
-   "الدوري الهولندي": "https://imgs.ysscores.com/championship/150/2571696547488.png",
+    "كأس ألمانيا": "https://imgs.ysscores.com/championship/150/1351691680796.png",
+    "أبطال أفريقيا": "https://imgs.ysscores.com/championship/150/5061696621582.png",
+    "كأس السعودية": "https://imgs.ysscores.com/championship/150/5141711141225.png",
+    "أبطال آسيا": "https://imgs.ysscores.com/championship/128/7731723924630.png",
+    "أبطال أوروبا": "https://imgs.ysscores.com/championship/150/5171696546919.png",
+    "الكونفدرالية": "https://imgs.ysscores.com/championship/150/1931696627235.png",
+    "أبطال آسيا 2": "https://imgs.ysscores.com/championship/150/9381723924846.png",
+    "الدوري الإيطالي": "https://imgs.ysscores.com/championship/150/6281692568873.png",
+    "الدوري الإنجليزي": "https://imgs.ysscores.com/championship/48/3411694791422.png",
+    "الدوري الإسباني": "https://imgs.ysscores.com/championship/48/8641690196626.png",
+    "الدوري الفرنسي": "https://imgs.ysscores.com/championship/128/9551719862665.png",
+    "الدوري الهولندي": "https://imgs.ysscores.com/championship/150/2571696547488.png",
     "الدوري السعودي": "https://i.ibb.co/60wYsvkQ/RSL.png",
     "كأس العالم للناشئين": "https://imgs.ysscores.com/championship/150/6591748257740.png",
     "كأس العرب": "https://imgs.ysscores.com/championship/128/971748035765.png",
-   "كوبا ليبرتادوريس": "https://imgs.ysscores.com/championship/150/8811695760721.png",
-"الدوري الألماني": "https://prod-media.beinsports.com/image/6by3h89i2eykc341oz7lv1ddd.png?ver=03-06-2025",
-"الدوري البرتغالي": "https://imgs.ysscores.com/championship/150/7301690383928.png",
+    "كوبا ليبرتادوريس": "https://imgs.ysscores.com/championship/150/8811695760721.png",
+    "الدوري الألماني": "https://prod-media.beinsports.com/image/6by3h89i2eykc341oz7lv1ddd.png?ver=03-06-2025",
+    "الدوري البرتغالي": "https://imgs.ysscores.com/championship/150/7301690383928.png"
+};
 
-    };
+const container = document.getElementById("videoList");
+const sentinel = document.getElementById("sentinel");
+const searchInput = document.getElementById("searchInput");
+const noResults = document.getElementById("noResults");
 
-    function renderVideos(list) {
-        container.innerHTML = "";
+let videosPerPage = 15;
+let currentIndex = 0;
+let filteredVideos = videos;
+let loading = false;
 
-        list.forEach(v => {
-            const item = document.createElement("a");
-            item.className = "video-item";
-            item.href = v.video;
-            item.setAttribute("data-title", v.title);
 
-            item.innerHTML = `
-                <div class="cover-container">
-                    <img src="${v.cover}">
-                    <div class="play-btn">
-                        <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"></path></svg>
-                    </div>
-                </div>
-
-                <div class="video-info">
-                    <h3 class="video-title">${v.title}</h3>
-                    <img class="League-img" src="${Leagues[v.League]}">
-                </div>
-            `;
-
-            container.appendChild(item);
+function lazyLoadImages() {
+    const lazyImages = document.querySelectorAll('img.lazy');
+    const imgObserver = new IntersectionObserver((entries, obs) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const img = entry.target;
+                img.src = img.dataset.src;
+                img.classList.remove("lazy");
+                obs.unobserve(img);
+            }
         });
+    }, { threshold: 0.2 });
+    lazyImages.forEach(img => imgObserver.observe(img));
+}
+
+function renderVideos(list, reset=false) {
+    if (loading) return;
+    loading = true;
+
+    if (reset) {
+        container.innerHTML = "";
+        currentIndex = 0;
     }
 
-    renderVideos(videos);
+    const slice = list.slice(currentIndex, currentIndex + videosPerPage);
 
-    const searchInput = document.getElementById("searchInput");
-    const noResults = document.getElementById("noResults");
+    slice.forEach(v => {
+        const item = document.createElement("a");
+        item.className = "video-item";
+        item.href = v.video;
 
-    searchInput.addEventListener("input", function () {
-        const q = this.value.toLowerCase().trim();
-
-        const filtered = videos.filter(v =>
-            v.title.toLowerCase().includes(q)
-        );
-
-        renderVideos(filtered);
-
-        noResults.style.display = filtered.length === 0 ? "block" : "none";
+        item.innerHTML = `
+            <div class="cover-container">
+                <img class="lazy" data-src="${v.cover}">
+            </div>
+            <div class="video-info">
+                <h3 class="video-title">${v.title}</h3>
+                <img class="League-img" src="${Leagues[v.League]}" style="height:28px;">
+            </div>
+        `;
+        container.appendChild(item);
     });
 
+    currentIndex += videosPerPage;
+
+    lazyLoadImages();
+    loading = false;
+}
+
+const infiniteObserver = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting && currentIndex < filteredVideos.length) {
+            renderVideos(filteredVideos);
+        }
+    });
+});
+infiniteObserver.observe(sentinel);
+
+searchInput.addEventListener("input", function () {
+    const q = this.value.toLowerCase().trim();
+    filteredVideos = videos.filter(v => v.title.toLowerCase().includes(q));
+    renderVideos(filteredVideos, true);
+    noResults.style.display = filteredVideos.length === 0 ? "block" : "none";
+});
+
+renderVideos(videos);
 </script>
 
 </body>

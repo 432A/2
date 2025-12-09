@@ -1,0 +1,3 @@
+#EXTM3U
+#EXT-X-STREAM-INF:BANDWIDTH=800000
+https://prod-fastly-eu-central-1.video.pscp.tv/Transcoding/v1/hls/cWqAn3Iz9VUcJndfROs0FwslCD7qoi1r0PoTcMjn0m8aLSSCrQ7-8DBI2FdTIFPyVSlmbP2QZUEmvLWpNkOrjA/non_transcode/eu-central-1/periscope-replay-direct-prod-eu-central-1-public/master_dynamic_delta.m3u8

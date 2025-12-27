@@ -909,7 +909,7 @@ gmtTime: "2025-12-24T20:00:00Z", url: "go:bnm"},
 
 //كأس أمم أفريقيا 2025 الجولة 2
 
-{t1: "المغرب", t2: "مالي",
+{t1: "المغرب", t2: "مالي", State:  "1 - 1",
 gmtTime: "2025-12-26T20:00:00Z", url: "go:bnm"},
 
 {t1: "زامبيا", t2: "جزر القمر",
@@ -921,7 +921,7 @@ gmtTime: "2025-12-26T15:00:00Z", url: "go:bnm"},
 {t1: "أنغولا", t2: "زيمبابوي",
 gmtTime: "2025-12-26T12:30:00Z", url: "go:bnm"},
 
-{t1: "نيجيريا", t2: "تونس",
+{t1: "نيجيريا", t2: "تونس", State: "3 - 1",
 gmtTime: "2025-12-27T20:00:00Z", url: "go:bnm"},
 
 {t1: "أوغندا", t2: "تنزانيا",
@@ -10779,25 +10779,22 @@ gmtTime: "2025-12-16T18:04:00Z"},
 };
 
 const defaultLogoUrl="https://i.ibb.co/r2V7Dzg5/LOGO.png";
-   
-function getClubLogoUrl(teamName) {
 
+function getClubLogoUrl(teamName) {
   const fileName = teamName.replace(/ /g, '_');
- 
   return `https://tvplus2.pages.dev/LOGO/${fileName}.png`;
 }
-
 let allMatches = [];
 for (const [leagueName, leagueData] of Object.entries(leaguesData)) {
   leagueData.matches.forEach(match => {
-allMatches.push({
-  Lig: leagueName,
-  t1: match.t1,
-  t2: match.t2,
-  gmtTime: match.gmtTime,
-  url: match.url,
-  State: match.State || null
-});
+    allMatches.push({
+      Lig: leagueName,
+      t1: match.t1,
+      t2: match.t2,
+      gmtTime: match.gmtTime,
+      url: match.url,
+      State: match.State || null
+    });
   });
 }
 
@@ -10819,10 +10816,23 @@ function getMatchStatus(m) {
   const end = new Date(start.getTime() + 120 * 60 * 1000);
   
   if(m.State){
+    // حالة خاصة إذا كانت State تحتوي على نتيجة (مثل "1 - 1")
+    const hasScore = m.State.includes('-') || m.State.includes(':');
+    if(hasScore) {
+      // إذا كان هناك نتيجة، نحتاج لتحديد إذا المباراة لا تزال جارية
+      if(now >= start && now < end) {
+        return "liveWithScore"; // مباراة جارية مع نتيجة
+      } else if(now >= end) {
+        return "endedWithScore"; // مباراة منتهية مع نتيجة
+      }
+    }
+    
+    // الحالات الخاصة الأخرى
     if(m.State==="A") return "postponed";
     if(m.State==="B") return "stopped";
     if(m.State==="C") return "canceled";
   }
+  
   if(now>=end)return"ended";
   if(now>=start&&now<end)return"live";
   if((start-now)>0&&(start-now)<=60000)return"countdown";
@@ -10850,11 +10860,9 @@ function toggleLeagueOrder(leagueName) {
   const currentIndex = leagueOrder.indexOf(leagueName);
   
   if (currentIndex === 0) {
-
     leagueOrder.splice(currentIndex, 1);
     leagueOrder.push(leagueName);
   } else {
-
     leagueOrder.splice(currentIndex, 1);
     leagueOrder.unshift(leagueName);
   }
@@ -10892,11 +10900,15 @@ function renderMatches(){
   
   
   if (viewMode === 'liveOnly') {
-    matchesForDate = matchesForDate.filter(m => getMatchStatus(m) === 'live');
-    if (matchesForDate.length === 0) {
-      container.innerHTML=`<div class="no-matches">لا توجد أي مباراة جارية الآن، قم بتغيير طريقة عرض المباريات</div>`;
-      return;
-    }
+  matchesForDate = matchesForDate.filter(m => {
+    const status = getMatchStatus(m);
+    return status === 'live' || status === 'liveWithScore';
+  });
+  
+  if (matchesForDate.length === 0) {
+    container.innerHTML=`<div class="no-matches">لا توجد أي مباراة جارية الآن، قم بتغيير طريقة عرض المباريات</div>`;
+    return;
+  }
   }
   
   if(matchesForDate.length===0){
@@ -10905,56 +10917,75 @@ function renderMatches(){
   }
   
   if (viewMode === 'byTime') {
-
-     matchesForDate.sort((a, b) => {
-      const statusA = getMatchStatus(a);
-      const statusB = getMatchStatus(b);
-      
-      if (statusA === 'ended' && statusB !== 'ended') return 1;
-      if (statusA !== 'ended' && statusB === 'ended') return -1;
-      if (statusA === 'ended' && statusB === 'ended') {
-
-        return new Date(b.gmtTime) - new Date(a.gmtTime);
-      }
-      
-      return new Date(a.gmtTime) - new Date(b.gmtTime);
-    });
+  matchesForDate.sort((a, b) => {
+    const statusA = getMatchStatus(a);
+    const statusB = getMatchStatus(b);
     
-    const timeCard = document.createElement("div");
-    timeCard.className = "league-card";
+    if ((statusA === 'ended' || statusA === 'endedWithScore') && 
+        (statusB !== 'ended' && statusB !== 'endedWithScore')) return 1;
+    if ((statusA !== 'ended' && statusA !== 'endedWithScore') && 
+        (statusB === 'ended' || statusB === 'endedWithScore')) return -1;
     
-    matchesForDate.forEach(m => {
-      const status = getMatchStatus(m);
-      let statusHTML =
-    status==="postponed" ? "<div class='time-status status-postponed'>تأجلت</div>" :
-    status==="stopped"   ? "<div class='time-status status-stopped'>توقفت</div>" :
-    status==="canceled"  ? "<div class='time-status status-canceled'>أُلغيت</div>" :
-    status==="ended"     ? "<div class='time-status status-ended'>انتهت</div>" :
-    status==="live"      ? "<div class='time-status status-live'>مباشر</div>" :
-    `<div class='time-status status-time'>${convertGMTToLocalTime(m.gmtTime)}</div>`;
-      const card = document.createElement("div");
-      card.className = "match-card";
-      if (status !== 'ended') {
-        card.onclick = () => { if(m.url) window.location.href = m.url; };
-      }
-      card.innerHTML = `
-        <div class="t">
-          <img src="${getClubLogoUrl(m.t1)}" onerror="this.src='${defaultLogoUrl}'">
-          <div class="t-name">${m.t1}</div>
-        </div>
-        ${statusHTML}
-        <div class="t" style="direction:ltr">
-          <img src="${getClubLogoUrl(m.t2)}" onerror="this.src='${defaultLogoUrl}'">
-          <div class="t-name">${m.t2}</div>
-        </div>
-      `;
-      timeCard.appendChild(card);
-    });
+    if ((statusA === 'ended' || statusA === 'endedWithScore') && 
+        (statusB === 'ended' || statusB === 'endedWithScore')) {
+      return new Date(b.gmtTime) - new Date(a.gmtTime);
+    }
     
-    container.appendChild(timeCard);
-    return;
-  }
+    return new Date(a.gmtTime) - new Date(b.gmtTime);
+  });
   
+  const timeCard = document.createElement("div");
+  timeCard.className = "league-card";
+  
+  matchesForDate.forEach(m => {
+    const status = getMatchStatus(m);
+    let statusHTML;
+    
+    if(status === "liveWithScore") {
+      // المباراة جارية ولها نتيجة: عرض النتيجة بلون مباشر
+      statusHTML = `<div class='time-status status-live'>${m.State}</div>`;
+    } else if(status === "endedWithScore") {
+      // المباراة انتهت ولها نتيجة: عرض النتيجة بلون انتهت
+      statusHTML = `<div class='time-status status-ended'>${m.State}</div>`;
+    } else {
+      // الحالات الأخرى
+      statusHTML =
+        status==="postponed" ? "<div class='time-status status-postponed'>تأجلت</div>" :
+        status==="stopped"   ? "<div class='time-status status-stopped'>توقفت</div>" :
+        status==="canceled"  ? "<div class='time-status status-canceled'>أُلغيت</div>" :
+        status==="ended"     ? "<div class='time-status status-ended'>انتهت</div>" :
+        status==="live"      ? "<div class='time-status status-live'>مباشر</div>" :
+        status==="upcoming"  ? `<div class='time-status status-time'>${convertGMTToLocalTime(m.gmtTime)}</div>` :
+        status==="countdown" ? `<div class='time-status status-live'>قريباً</div>` :
+        `<div class='time-status status-time'>${convertGMTToLocalTime(m.gmtTime)}</div>`;
+    }
+    
+    const card = document.createElement("div");
+    card.className = "match-card";
+    
+    // السماح بالنقر فقط للمباريات التي لم تنتهِ
+    if (status !== 'ended' && status !== 'endedWithScore') {
+      card.onclick = () => { if(m.url) window.location.href = m.url; };
+    }
+    
+    card.innerHTML = `
+      <div class="t">
+        <img src="${getClubLogoUrl(m.t1)}" onerror="this.src='${defaultLogoUrl}'">
+        <div class="t-name">${m.t1}</div>
+      </div>
+      ${statusHTML}
+      <div class="t" style="direction:ltr">
+        <img src="${getClubLogoUrl(m.t2)}" onerror="this.src='${defaultLogoUrl}'">
+        <div class="t-name">${m.t2}</div>
+      </div>
+    `;
+    timeCard.appendChild(card);
+  });
+  
+  container.appendChild(timeCard);
+  return;
+}
+
   let grouped={};
   matchesForDate.forEach(m=>(grouped[m.Lig]=grouped[m.Lig]||[]).push(m));
   let leagues=Object.keys(grouped);
@@ -11006,14 +11037,17 @@ function renderMatches(){
     header.appendChild(arrow);
     lCard.appendChild(header);
 
-  grouped[league].sort((a, b) => {
+    grouped[league].sort((a, b) => {
   const statusA = getMatchStatus(a);
   const statusB = getMatchStatus(b);
 
-  if (statusA === 'ended' && statusB !== 'ended') return 1;
-  if (statusA !== 'ended' && statusB === 'ended') return -1;
+  if ((statusA === 'ended' || statusA === 'endedWithScore') && 
+      (statusB !== 'ended' && statusB !== 'endedWithScore')) return 1;
+  if ((statusA !== 'ended' && statusA !== 'endedWithScore') && 
+      (statusB === 'ended' || statusB === 'endedWithScore')) return -1;
 
-  if (statusA === 'ended' && statusB === 'ended') {
+  if ((statusA === 'ended' || statusA === 'endedWithScore') && 
+      (statusB === 'ended' || statusB === 'endedWithScore')) {
     return new Date(b.gmtTime) - new Date(a.gmtTime);
   }
 
@@ -11022,22 +11056,36 @@ function renderMatches(){
 
 grouped[league].forEach(m=>{
   const status=getMatchStatus(m);
-  let statusHTML =
-    status==="postponed" ? "<div class='time-status status-postponed'>تأجلت</div>" :
-    status==="stopped"   ? "<div class='time-status status-stopped'>توقفت</div>" :
-    status==="canceled"  ? "<div class='time-status status-canceled'>أُلغيت</div>" :
-    status==="ended"     ? "<div class='time-status status-ended'>انتهت</div>" :
-    status==="live"      ? "<div class='time-status status-live'>مباشر</div>" :
-    `<div class='time-status status-time'>${convertGMTToLocalTime(m.gmtTime)}</div>`;
+  let statusHTML;
+  
+  if(status === "liveWithScore") {
+    // المباراة جارية ولها نتيجة: عرض النتيجة بلون مباشر
+    statusHTML = `<div class='time-status status-live'>${m.State}</div>`;
+  } else if(status === "endedWithScore") {
+    // المباراة انتهت ولها نتيجة: عرض النتيجة بلون انتهت
+    statusHTML = `<div class='time-status status-ended'>${m.State}</div>`;
+  } else {
+    // الحالات الأخرى
+    statusHTML =
+      status==="postponed" ? "<div class='time-status status-postponed'>تأجلت</div>" :
+      status==="stopped"   ? "<div class='time-status status-stopped'>توقفت</div>" :
+      status==="canceled"  ? "<div class='time-status status-canceled'>أُلغيت</div>" :
+      status==="ended"     ? "<div class='time-status status-ended'>انتهت</div>" :
+      status==="live"      ? "<div class='time-status status-live'>مباشر</div>" :
+      status==="upcoming"  ? `<div class='time-status status-time'>${convertGMTToLocalTime(m.gmtTime)}</div>` :
+      status==="countdown" ? `<div class='time-status status-live'>قريباً</div>` :
+      `<div class='time-status status-time'>${convertGMTToLocalTime(m.gmtTime)}</div>`;
+  }
+  
   const card=document.createElement("div");
   card.className="match-card";
-  if (status !== 'ended') {
+  if (status !== 'ended' && status !== 'endedWithScore') {
     card.onclick=()=>{if(m.url)window.location.href=m.url;};
   }
   card.innerHTML=`<div class="t"><img src="${getClubLogoUrl(m.t1)}" onerror="this.src='${defaultLogoUrl}'"><div class="t-name">${m.t1}</div></div>${statusHTML}<div class="t" style="direction:ltr"><img src="${getClubLogoUrl(m.t2)}" onerror="this.src='${defaultLogoUrl}'"><div class="t-name">${m.t2}</div></div>`;
   lCard.appendChild(card);
-});    
-container.appendChild(lCard);
+});  
+  container.appendChild(lCard);
   });
 }
 
@@ -11074,6 +11122,7 @@ window.onload=()=>{
   
   renderMatches();
 };
+
 </script>
 </body>
 </html>

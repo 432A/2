@@ -10816,18 +10816,18 @@ function getMatchStatus(m) {
   const end = new Date(start.getTime() + 120 * 60 * 1000);
   
   if(m.State){
-    // حالة خاصة إذا كانت State تحتوي على نتيجة (مثل "1 - 1")
+
     const hasScore = m.State.includes('-') || m.State.includes(':');
     if(hasScore) {
-      // إذا كان هناك نتيجة، نحتاج لتحديد إذا المباراة لا تزال جارية
-      if(now >= start && now < end) {
-        return "liveWithScore"; // مباراة جارية مع نتيجة
-      } else if(now >= end) {
-        return "endedWithScore"; // مباراة منتهية مع نتيجة
+
+     if(now >= start && now < end) {
+        return "liveWithScore"; 
+
+     } else if(now >= end) {
+        return "endedWithScore";   
       }
     }
     
-    // الحالات الخاصة الأخرى
     if(m.State==="A") return "postponed";
     if(m.State==="B") return "stopped";
     if(m.State==="C") return "canceled";
@@ -10942,13 +10942,13 @@ function renderMatches(){
     let statusHTML;
     
     if(status === "liveWithScore") {
-      // المباراة جارية ولها نتيجة: عرض النتيجة بلون مباشر
-      statusHTML = `<div class='time-status status-live'>${m.State}</div>`;
+
+     statusHTML = `<div class='time-status status-live'>${m.State}</div>`;
     } else if(status === "endedWithScore") {
-      // المباراة انتهت ولها نتيجة: عرض النتيجة بلون انتهت
-      statusHTML = `<div class='time-status status-ended'>${m.State}</div>`;
+   
+     statusHTML = `<div class='time-status status-ended'>${m.State}</div>`;
     } else {
-      // الحالات الأخرى
+ 
       statusHTML =
         status==="postponed" ? "<div class='time-status status-postponed'>تأجلت</div>" :
         status==="stopped"   ? "<div class='time-status status-stopped'>توقفت</div>" :
@@ -10963,8 +10963,8 @@ function renderMatches(){
     const card = document.createElement("div");
     card.className = "match-card";
     
-    // السماح بالنقر فقط للمباريات التي لم تنتهِ
-    if (status !== 'ended' && status !== 'endedWithScore') {
+     
+  if (status !== 'ended' && status !== 'endedWithScore') {
       card.onclick = () => { if(m.url) window.location.href = m.url; };
     }
     
@@ -11059,13 +11059,13 @@ grouped[league].forEach(m=>{
   let statusHTML;
   
   if(status === "liveWithScore") {
-    // المباراة جارية ولها نتيجة: عرض النتيجة بلون مباشر
+     
     statusHTML = `<div class='time-status status-live'>${m.State}</div>`;
   } else if(status === "endedWithScore") {
-    // المباراة انتهت ولها نتيجة: عرض النتيجة بلون انتهت
+      
     statusHTML = `<div class='time-status status-ended'>${m.State}</div>`;
   } else {
-    // الحالات الأخرى
+     
     statusHTML =
       status==="postponed" ? "<div class='time-status status-postponed'>تأجلت</div>" :
       status==="stopped"   ? "<div class='time-status status-stopped'>توقفت</div>" :

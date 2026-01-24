@@ -4,9 +4,6 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>إذاعة القرآن الكريم</title>
- <link rel="icon" type="image/x-icon" href="https://i.ibb.co/F4RVbTwK/Radio.png">
-    <link rel="apple-touch-icon" href="https://i.ibb.co/F4RVbTwK/Radio.png">
-    <link rel="icon" type="image/png" href="https://i.ibb.co/F4RVbTwK/Radio.png">
 <link href="https://db.onlinewebfonts.com/c/b86c0f3afb7b6eb1952be1d4c753140c?family=Al-Jazeera-Arabic-Regular" rel="stylesheet">
 
 <style>
@@ -26,7 +23,6 @@
     padding:12px; 
     max-width:720px; 
     margin:0 auto; 
-    padding-bottom: 100px; 
   }
   .search{ 
     margin-bottom:10px; 
@@ -74,7 +70,6 @@
     transition:background .14s;
     justify-content: flex-start;
     gap: 12px;
-    cursor: pointer;
   }
   li.chan:hover{ background:rgba(255,255,255,0.05); }
   li.chan:active{ background:var(--accent); }
@@ -113,7 +108,6 @@
     text-align:center; 
     padding:14px 0; 
   }
-
   .loading {
     display: flex;
     flex-direction: column;
@@ -148,289 +142,19 @@
   .retry-btn:hover {
     background: rgba(255,255,255,0.2);
   }
-  .audio-player {
-    position: fixed;
-    bottom: 0;
-    right: 0;
-    left: 0;
-    background: rgba(20, 22, 25, 0.95);
-    backdrop-filter: blur(10px);
-    border-top: 1px solid rgba(255,255,255,0.1);
-    padding: 15px 20px;
-    z-index: 1000;
-    display: none;
-  }
-
-  .player-active {
-    display: block;
-  }
-
-  .player-info {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 12px;
-  }
-
-  .player-logo {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    overflow: hidden;
-    background: #333;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #ddd;
-    font-weight: bold;
-    flex-shrink: 0;
-  }
-
-  .player-logo img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-
-  .player-title {
-    flex: 1;
-    font-size: 16px;
-    font-weight: 600;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .player-controls {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    justify-content: center;
-  }
-
-  .control-btn {
-    background: rgba(255,255,255,0.1);
-    border: none;
-    border-radius: 50%;
-    width: 44px;
-    height: 44px;
-    color: #e8eef2;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background 0.2s;
-    font-size: 18px;
-  }
-
-  .control-btn:hover {
-    background: rgba(255,255,255,0.2);
-  }
-
-  .control-btn:active {
-    background: var(--accent);
-  }
-
-  .play-btn {
-    background: #4CAF50;
-    width: 50px;
-    height: 50px;
-    font-size: 20px;
-  }
-
-  .play-btn:hover {
-    background: #45a049;
-  }
-
-  .close-btn {
-    position: absolute;
-    left: 20px;
-    top: 15px;
-    background: rgba(255,255,255,0.1);
-    border: none;
-    border-radius: 50%;
-    width: 32px;
-    height: 32px;
-    color: #e8eef2;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 14px;
-  }
-
-  .close-btn:hover {
-    background: rgba(255,0,0,0.3);
-  }
-
-  .control-btn svg {
-    width: 24px;
-    height: 24px;
-    fill: currentColor;
-  }
-
-  .play-btn svg {
-    width: 28px;
-    height: 28px;
-  }
-  .app-promotion {
-    position: fixed;
-    top: 0;
-    right: 0;
-    left: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.8);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 2000;
-    padding: 20px;
-    backdrop-filter: blur(5px);
-  }
-
-  .promotion-content {
-    background: var(--bg);
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 15px;
-    padding: 25px;
-    max-width: 400px;
-    width: 100%;
-    text-align: center;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-    position: relative;
-  }
-
-  .promotion-close {
-    position: absolute;
-    left: 15px;
-    top: 15px;
-    background: rgba(255,255,255,0.1);
-    border: none;
-    border-radius: 50%;
-    width: 32px;
-    height: 32px;
-    color: #e8eef2;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 14px;
-  }
-
-  .promotion-close:hover {
-    background: rgba(255,0,0,0.3);
-  }
-
-  .promotion-icon {
-    font-size: 48px;
-    margin-bottom: 15px;
-  }
-
-  .promotion-title {
-    font-size: 20px;
-    font-weight: bold;
-    margin-bottom: 10px;
-    color: #4CAF50;
-  }
-
-  .promotion-text {
-    margin-bottom: 20px;
-    line-height: 1.6;
-    color: var(--muted);
-  }
-
-  .promotion-buttons {
-    display: flex;
-    gap: 10px;
-    justify-content: center;
-  }
-
-  .promotion-btn {
-    padding: 12px 20px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: 600;
-    transition: all 0.3s;
-    flex: 1;
-  }
-
-  .promotion-btn.primary {
-    background: #4CAF50;
-    color: white;
-  }
-
-  .promotion-btn.primary:hover {
-    background: #45a049;
-  }
-
-  .promotion-btn.secondary {
-    background: rgba(255,255,255,0.1);
-    color: #e8eef2;
-  }
-
-  .promotion-btn.secondary:hover {
-    background: rgba(255,255,255,0.2);
-  
-  }
 </style>
 </head>
 <body oncontextmenu="return false">
   <div class="container">
     <div class="search">
-      <input id="searchInput" type="search" placeholder="بحث..." aria-label="بحث عن القارئ">
+      <input id="searchInput" type="search" placeholder="بحث..." aria-label="بحث عن قناة">
     </div>
     <div id="loadingIndicator" class="loading" style="display:none">
       <div class="spinner"></div>
-      <div>جاري تحميل القائمة...</div>
+      <div>جاري تحميل القوائم...</div>
     </div>
     <div id="groupsRoot"></div>
     <div id="resultsRoot" class="results" style="display:none"></div>
-        </div> 
-
-  <div id="audioPlayer" class="audio-player">
-    <button class="close-btn" onclick="closePlayer()">✕</button>
-    <div class="player-info">
-      <div class="player-logo" id="playerLogo">
-        <span>TV</span>
-      </div>
-      <div class="player-title" id="playerTitle">إسم الإذاعة</div>
-    </div>
-    <div class="player-controls">
-      <button class="control-btn" onclick="playPrevious()">
-        <svg viewBox="0 0 24 24">
-          <path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/>
-        </svg>
-      </button>
-      <button class="control-btn play-btn" onclick="togglePlay()" id="playBtn">
-        <svg viewBox="0 0 24 24" id="playIcon">
-          <path d="M8 5v14l11-7z"/>
-        </svg>
-      </button>
-      <button class="control-btn" onclick="playNext()">
-        <svg viewBox="0 0 24 24">
-          <path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/>
-        </svg>
-      </button>
-    </div>
-    <audio id="audioElement" preload="metadata"></audio>
-  </div>
-
-  <div id="appPromotion" class="app-promotion" style="display: none;">
-    <div class="promotion-content">
-      <button class="promotion-close" onclick="closePromotionPermanently()">✕</button>
-      <div class="promotion-icon"></div>
-      <div class="promotion-title">تطبيق الجوال</div>
-      <div class="promotion-text">
-        حمّل تطبيقنا على هاتفك الأندرويد لتجربة أفضل
-        <br><br>
-        <small></small>
-      </div>
-      <div class="promotion-buttons">
-        <button class="promotion-btn secondary" onclick="closePromotion()">لاحقاً</button>
-        <button class="promotion-btn primary" onclick="downloadApp()">تحميل التطبيق</button>
-      </div>
-    </div>
   </div>
 
 <script>
@@ -441,15 +165,13 @@ const PROXIES = [
   "https://cors-anywhere.herokuapp.com/",
   "https://api.allorigins.win/raw?url="
 ];
+
 let groupsData = {};
 let allChannelsFlat = [];
-let currentAudio = document.getElementById('audioElement');
-let isPlaying = false;
-let currentChannelIndex = -1;
-let currentPlaylist = [];
 let currentProxyIndex = 0;
 const CACHE_KEY = 'radio_channels_cache';
-const CACHE_EXPIRY = 30 * 60 * 1000;  
+const CACHE_EXPIRY = 30 * 60 * 1000; // 30 دقيقة
+let searchTimeout = null;
 
 function showLoading() {
   document.getElementById('loadingIndicator').style.display = 'flex';
@@ -464,10 +186,12 @@ function showError(message, showRetry = true) {
   root.innerHTML = `
     <div class="nores">
       <div>${message}</div>
-      ${showRetry ? '<button class="retry-btn" onclick="forceRefresh()">إعادة تحميل البيانات</button>' : ''}
+      ${showRetry ? '<button class="retry-btn" onclick="init()">إعادة المحاولة</button>' : ''}
     </div>
   `;
 }
+
+// دالة لجلب البيانات مع إعادة المحاولة
 async function fetchWithRetry(url, retries = 3, delay = 1000) {
   for (let i = 0; i < retries; i++) {
     try {
@@ -480,11 +204,12 @@ async function fetchWithRetry(url, retries = 3, delay = 1000) {
     } catch (error) {
       console.error(`المحاولة ${i + 1} فشلت:`, error);
       
+      // تجربة خادم وكيل مختلف في المحاولة التالية
       currentProxyIndex = (currentProxyIndex + 1) % PROXIES.length;
       
       if (i < retries - 1) {
         await new Promise(resolve => setTimeout(resolve, delay));
-        delay *= 1.5; 
+        delay *= 1.5; // زيادة التأخير مع كل محاولة
       }
     }
   }
@@ -492,11 +217,13 @@ async function fetchWithRetry(url, retries = 3, delay = 1000) {
   throw new Error('فشل جميع محاولات الجلب');
 }
 
+// التحقق من صلاحية البيانات المخزنة
 function isCacheValid(cacheData) {
   if (!cacheData || !cacheData.timestamp) return false;
   return (Date.now() - cacheData.timestamp) < CACHE_EXPIRY;
 }
 
+// تخزين البيانات محلياً
 function saveToCache(data) {
   const cacheData = {
     data: data,
@@ -505,6 +232,7 @@ function saveToCache(data) {
   localStorage.setItem(CACHE_KEY, JSON.stringify(cacheData));
 }
 
+// استرجاع البيانات من التخزين المحلي
 function getFromCache() {
   try {
     const cached = localStorage.getItem(CACHE_KEY);
@@ -516,32 +244,175 @@ function getFromCache() {
   }
   return null;
 }
-async function forceRefresh() {
-  localStorage.removeItem(CACHE_KEY);
-  init();
+
+// مقارنة البيانات القديمة والجديدة وإضافة الجديد فقط
+function mergeNewData(oldData, newData) {
+  const oldGroups = parseM3UToObject(oldData);
+  const newGroups = parseM3UToObject(newData);
+  
+  // دمج البيانات مع الحفاظ على البيانات القديمة وإضافة الجديدة فقط
+  const mergedGroups = {...oldGroups};
+  
+  for (const groupName in newGroups) {
+    if (!mergedGroups[groupName]) {
+      // مجموعة جديدة تماماً
+      mergedGroups[groupName] = newGroups[groupName];
+    } else {
+      // إضافة القنوات الجديدة فقط إلى المجموعة الموجودة
+      const existingChannels = mergedGroups[groupName];
+      const newChannels = newGroups[groupName];
+      
+      for (const newChannel of newChannels) {
+        const exists = existingChannels.some(oldChannel => 
+          oldChannel.name === newChannel.name && oldChannel.url === newChannel.url
+        );
+        
+        if (!exists) {
+          existingChannels.push(newChannel);
+        }
+      }
+    }
+  }
+  
+  return mergedGroups;
 }
-async function init() {
-  showLoading();
+
+// تحويل بيانات M3U إلى كائن للمقارنة
+function parseM3UToObject(txt) {
+  const lines = txt.split(/\r?\n/).map(l=>l.trim()).filter(Boolean);
+  let pending = null;
+  const groups = {};
+
+  for (let i=0;i<lines.length;i++){
+    const line = lines[i];
+    if (line.startsWith('#EXTINF')) {
+      const nameMatch = line.match(/,(.*)$/);
+      const groupMatch = line.match(/group-title="(.*?)"/i);
+      const logoMatch  = line.match(/tvg-logo="(.*?)"/i) || line.match(/logo="(.*?)"/i);
+      pending = {
+        name: nameMatch ? nameMatch[1].trim() : '',
+        group: groupMatch ? groupMatch[1].trim() : 'إذاعة عامة',
+        logo: logoMatch ? logoMatch[1].trim() : ''
+      };
+      continue;
+    }
+    if (line.startsWith('#')) continue;
+    if (pending){
+      const ch = { 
+        name: pending.name, 
+        url: line, 
+        logo: pending.logo, 
+        group: pending.group 
+      };
+      if (!groups[ch.group]) groups[ch.group] = [];
+      groups[ch.group].push(ch);
+      pending = null;
+    }
+  }
+  
+  return groups;
+}
+
+// تحديث الواجهة مع البيانات المدمجة
+function updateUIWithMergedData(mergedGroups) {
+  groupsData = mergedGroups;
+  
+  // إعادة إنشاء القائمة المسطحة
+  allChannelsFlat = [];
+  for (const groupName in groupsData) {
+    allChannelsFlat.push(...groupsData[groupName]);
+  }
+  
+  renderGroups();
+  setupSearch();
+}
+
+// تحديث البيانات في الخلفية
+async function updateDataInBackground() {
   try {
-    console.log('محاولة جلب البيانات الجديدة...');
-    const txt = await fetchWithRetry(SOURCE_RAW);
-    saveToCache(txt);
-    parseM3U(txt);
-    renderGroups();
-    setupSearch();
-    setupAudioEvents();
-    showAppPromotion();
-  } catch (err) {
-    console.error('خطأ في تحميل القائمة:', err);
+    console.log('بدء التحديث في الخلفية...');
+    const newData = await fetchWithRetry(SOURCE_RAW);
+    
+    // الحصول على البيانات المخزنة حالياً
     const cached = getFromCache();
+    
     if (cached && cached.data) {
-      console.log('استخدام البيانات المخزنة كبديل');
-      parseM3U(cached.data);
+      // دمج البيانات القديمة مع الجديدة
+      const mergedData = mergeNewData(cached.data, newData);
+      
+      // تحويل البيانات المدمجة إلى تنسيق M3U للتخزين
+      const mergedM3U = convertGroupsToM3U(mergedData);
+      saveToCache(mergedM3U);
+      
+      // تحديث الواجهة إذا كانت مفتوحة
+      updateUIWithMergedData(mergedData);
+    } else {
+      // إذا لم تكن هناك بيانات مخزنة، حفظ البيانات الجديدة مباشرة
+      saveToCache(newData);
+      parseM3U(newData);
       renderGroups();
       setupSearch();
-      setupAudioEvents();
-      showError('يتم استخدام البيانات المخزنة (غير متصل بالإنترنت)', true);
+    }
+    
+    console.log('تم التحديث في الخلفية بنجاح');
+  } catch (err) {
+    console.error('فشل التحديث في الخلفية:', err);
+  }
+}
+
+// تحويل كائن المجموعات إلى تنسيق M3U
+function convertGroupsToM3U(groups) {
+  let m3uContent = '#EXTM3U\n';
+  
+  for (const groupName in groups) {
+    for (const channel of groups[groupName]) {
+      m3uContent += `#EXTINF:-1 tvg-logo="${channel.logo}" group-title="${channel.group}",${channel.name}\n`;
+      m3uContent += `${channel.url}\n`;
+    }
+  }
+  
+  return m3uContent;
+}
+
+async function init() {
+  // عرض البيانات المخزنة فوراً إذا كانت موجودة
+  const cached = getFromCache();
+  
+  if (cached && cached.data) {
+    console.log('عرض البيانات المخزنة فوراً');
+    parseM3U(cached.data);
+    renderGroups();
+    setupSearch();
+    hideLoading();
+  } else {
+    showLoading();
+  }
+  
+  // دائماً محاولة التحديث في الخلفية
+  try {
+    console.log('بدء التحديث...');
+    const newData = await fetchWithRetry(SOURCE_RAW);
+    
+    if (cached && cached.data) {
+      // دمج البيانات القديمة مع الجديدة
+      const mergedData = mergeNewData(cached.data, newData);
+      const mergedM3U = convertGroupsToM3U(mergedData);
+      saveToCache(mergedM3U);
+      updateUIWithMergedData(mergedData);
     } else {
+      // إذا لم تكن هناك بيانات مخزنة، استخدام البيانات الجديدة مباشرة
+      saveToCache(newData);
+      parseM3U(newData);
+      renderGroups();
+      setupSearch();
+    }
+    
+    console.log('تم التحديث بنجاح');
+  } catch (err) {
+    console.error('خطأ في التحديث:', err);
+    
+    // إذا فشل التحديث ولم تكن هناك بيانات مخزنة، عرض رسالة خطأ
+    if (!cached || !cached.data) {
       showError('فشل تحميل القائمة. تأكد من اتصالك بالإنترنت.', true);
     }
   } finally {
@@ -557,26 +428,42 @@ function cleanText(t){
     .toLowerCase();
 }
 
+// دالة بحث متقدمة تعرض النتائج تلقائياً
 function advancedSearch(query) {
   const results = [];
   const cleanQuery = cleanText(query);
+  
+  // تقسيم البحث إلى كلمات
   const words = cleanQuery.split(/\s+/).filter(word => word.length > 0);
+  
   if (words.length === 0) return results;
+  
+  // البحث في جميع المجلدات والقنوات
   for (const groupName in groupsData) {
     const cleanGroupName = cleanText(groupName);
+    
+    // إذا كانت جميع كلمات البحث موجودة في اسم المجلد
     const allWordsInGroup = words.every(word => cleanGroupName.includes(word));
+    
+    // إذا كانت إحدى كلمات البحث تطابق اسم المجلد
     const someWordInGroup = words.some(word => cleanGroupName.includes(word));
     
     if (allWordsInGroup) {
+      // إذا تطابقت جميع الكلمات مع اسم المجلد، عرض كل محتوياته
       results.push(...groupsData[groupName]);
     } else if (someWordInGroup) {
+      // إذا تطابقت بعض الكلمات مع اسم المجلد، البحث في قنواته
       for (const channel of groupsData[groupName]) {
         const cleanChannelName = cleanText(channel.name);
+        
+        // البحث عن الكلمات المتبقية في اسم القناة
         const remainingWords = words.filter(word => !cleanGroupName.includes(word));
         
         if (remainingWords.length === 0) {
+          // إذا لم تتبقى كلمات، عرض جميع قنوات المجلد
           results.push(channel);
         } else {
+          // إذا تبقى كلمات، التحقق من تطابقها مع اسم القناة
           const allRemainingInChannel = remainingWords.every(word => 
             cleanChannelName.includes(word)
           );
@@ -587,9 +474,11 @@ function advancedSearch(query) {
         }
       }
     } else {
-      
+      // إذا لم يتطابق أي كلمة مع اسم المجلد، البحث في قنواته فقط
       for (const channel of groupsData[groupName]) {
         const cleanChannelName = cleanText(channel.name);
+        
+        // التحقق إذا كانت جميع كلمات البحث موجودة في اسم القناة
         const allWordsInChannel = words.every(word => cleanChannelName.includes(word));
         
         if (allWordsInChannel) {
@@ -599,9 +488,11 @@ function advancedSearch(query) {
     }
   }
   
+  // إزالة التكرارات
   return [...new Set(results)];
 }
 
+// دالة لترتيب النتائج حسب مدى التطابق
 function sortSearchResults(results, query) {
   const cleanQuery = cleanText(query);
   const words = cleanQuery.split(/\s+/);
@@ -611,8 +502,12 @@ function sortSearchResults(results, query) {
     const aName = cleanText(a.name);
     const bGroup = cleanText(b.group);
     const bName = cleanText(b.name);
+    
+    // حساب نقاط التطابق للعنصر أ
     let aScore = 0;
     let bScore = 0;
+    
+    // نقاط إضافية للتطابق الكامل مع المجلد
     words.forEach(word => {
       if (aGroup.includes(word)) aScore += 2;
       if (bGroup.includes(word)) bScore += 2;
@@ -659,7 +554,7 @@ function parseM3U(txt){
   }
 }
 
-function renderGroups(){
+function renderGroups(){8
   const root = document.getElementById('groupsRoot');
   root.innerHTML = '';
   
@@ -674,6 +569,7 @@ function renderGroups(){
     title.textContent = g;
     const ul = document.createElement('ul');
     ul.className = 'chlist';
+    // تمرير false لعدم عرض اسم المجموعة في القائمة الرئيسية
     groupsData[g].forEach(ch => ul.appendChild(makeChannelRow(ch, false)));
     title.addEventListener('click', ()=> {
       ul.style.display = ul.style.display === 'block' ? 'none' : 'block';
@@ -704,6 +600,7 @@ function makeChannelRow(ch, showGroup = false) {
   const t = document.createElement('div'); 
   t.className = 'ch-title'; 
   
+  // إضافة اسم المجموعة إذا كان showGroup = true
   if (showGroup) {
     t.textContent = `${ch.group} | ${ch.name}`;
   } else {
@@ -713,7 +610,7 @@ function makeChannelRow(ch, showGroup = false) {
   li.appendChild(logo); 
   li.appendChild(t);
   
-  li.addEventListener('click', ()=> playChannel(ch));
+  li.addEventListener('click', ()=> window.open(ch.url,'_blank'));
   return li;
 }
 
@@ -723,261 +620,43 @@ function setupSearch(){
   const resultsRoot = document.getElementById('resultsRoot');
 
   input.addEventListener('input', ()=>{
-    const q = input.value.trim(); 
-    if (!q){
-      resultsRoot.style.display = 'none'; 
-      groupsRoot.style.display = '';
+    // إلغاء البحث السابق إذا كان موجوداً
+    if (searchTimeout) {
+      clearTimeout(searchTimeout);
+    }
+    
+    // تأخير البحث لمدة 300 مللي ثانية بعد توقف المستخدم عن الكتابة
+    searchTimeout = setTimeout(() => {
+      const q = input.value.trim();
+      if (!q){
+        resultsRoot.style.display = 'none'; 
+        groupsRoot.style.display = '';
+        resultsRoot.innerHTML = '';
+        return;
+      }
+      
+      let matches = advancedSearch(q);
+      
+      // ترتيب النتائج حسب مدى التطابق
+      matches = sortSearchResults(matches, q);
+      
       resultsRoot.innerHTML = '';
-      return;
-    }
-    
-    let matches = advancedSearch(q);
-
-    matches = sortSearchResults(matches, q);
-    
-    resultsRoot.innerHTML = '';
-    if (!matches.length){
-      resultsRoot.innerHTML = '<div class="nores">لا توجد نتائج</div>';
-    } else {
-      const ul = document.createElement('ul');
-      ul.className = 'chlist'; 
-      ul.style.display = 'block';
-      matches.forEach(ch => ul.appendChild(makeChannelRow(ch, true)));
-      resultsRoot.appendChild(ul);
-    }
-    groupsRoot.style.display = 'none';
-    resultsRoot.style.display = '';
+      if (!matches.length){
+        resultsRoot.innerHTML = '<div class="nores">لا توجد نتائج</div>';
+      } else {
+        const ul = document.createElement('ul');
+        ul.className = 'chlist'; 
+        ul.style.display = 'block';
+        matches.forEach(ch => ul.appendChild(makeChannelRow(ch, true)));
+        resultsRoot.appendChild(ul);
+      }
+      groupsRoot.style.display = 'none';
+      resultsRoot.style.display = '';
+    }, 300);
   });
 }
 
-function playChannel(channel) {
-  const player = document.getElementById('audioPlayer');
-  const playerTitle = document.getElementById('playerTitle');
-  const playerLogo = document.getElementById('playerLogo');
-  const playIcon = document.getElementById('playIcon');
-
-  playerTitle.textContent = channel.name;
-  
-  playerLogo.innerHTML = '';
-  if (channel.logo) {
-    const img = document.createElement('img');
-    img.src = channel.logo;
-    img.alt = channel.name;
-    img.onerror = function() {
-      this.style.display = 'none';
-      playerLogo.innerHTML = `<span>${channel.name.charAt(0).toUpperCase() || 'TV'}</span>`;
-    };
-    playerLogo.appendChild(img);
-  } else {
-    playerLogo.innerHTML = `<span>${channel.name.charAt(0).toUpperCase() || 'TV'}</span>`;
-  }
-
-  currentAudio.pause();
-  currentAudio.src = '';
-  
-  currentAudio.src = channel.url;
-     
-  currentPlaylist = allChannelsFlat;
-  currentChannelIndex = currentPlaylist.findIndex(ch => ch.url === channel.url);
-  
-  player.classList.add('player-active');
-
-   
-  const playPromise = currentAudio.play();
-  
-  if (playPromise !== undefined) {
-    playPromise.then(() => {
-      isPlaying = true;
-      playIcon.innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
-      console.log('تم تشغيل الإذاعة بنجاح:', channel.name);
-    }).catch(err => {
-      console.error('خطأ في التشغيل:', err);
-      
-    });
-  }
-}
-
-function togglePlay() {
-  const playIcon = document.getElementById('playIcon');
-  
-  if (isPlaying) {
-    currentAudio.pause();
-    playIcon.innerHTML = '<path d="M8 5v14l11-7z"/>';
-    isPlaying = false;
-  } else {
-    currentAudio.play().then(() => {
-      playIcon.innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
-      isPlaying = true;
-    }).catch(err => {
-      console.error('خطأ في التشغيل:', err);
-    });
-  }
-}
-
-function playNext() {
-  if (currentPlaylist.length === 0) return;
-  
-  try {
-    currentChannelIndex = (currentChannelIndex + 1) % currentPlaylist.length;
-    const nextChannel = currentPlaylist[currentChannelIndex];
-    console.log('الانتقال إلى الإذاعة التالية:', nextChannel.name);
-    playChannel(nextChannel);
-  } catch (error) {
-    console.error('خطأ في playNext:', error);
-  }
-}
-
-function playPrevious() {
-  if (currentPlaylist.length === 0) return;
-  
-  currentChannelIndex = (currentChannelIndex - 1 + currentPlaylist.length) % currentPlaylist.length;
-  const prevChannel = currentPlaylist[currentChannelIndex];
-  playChannel(prevChannel);
-}
-
-function closePlayer() {
-  const player = document.getElementById('audioPlayer');
-  const playIcon = document.getElementById('playIcon');
-  
-  currentAudio.pause();
-  currentAudio.src = '';
-  isPlaying = false;
-  playIcon.innerHTML = '<path d="M8 5v14l11-7z"/>';
-  player.classList.remove('player-active');
-}
-
-function setupAudioEvents() {
-  currentAudio.addEventListener('ended', () => {
- 
-    console.log('انتهى التشغيل، الانتقال إلى الإذاعة التالية');
-    playNext();
-  });
-
-  currentAudio.addEventListener('pause', () => {
-    isPlaying = false;
-    document.getElementById('playIcon').innerHTML = '<path d="M8 5v14l11-7z"/>';
-  });
-
-  currentAudio.addEventListener('play', () => {
-    isPlaying = true;
-    document.getElementById('playIcon').innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
-  });
-
-  currentAudio.addEventListener('error', (e) => {
-    console.error('خطأ في الصوت:', e);
-
-  });
-
-  currentAudio.addEventListener('loadstart', () => {
-    console.log('بدء تحميل الصوت');
-  });
-
-  currentAudio.addEventListener('canplay', () => {
-    console.log('الصوت جاهز للتشغيل');
-  });
-}
-
-function updatePromotionStatus(action) {
-  const currentStatus = localStorage.getItem('appPromotionStatus');
-  
-  if (action === 'downloaded') {
-      
-    localStorage.setItem('appPromotionStatus', 'downloaded');
-  } else if (action === 'seen') {
-    let statusData;
-    
-    if (currentStatus && currentStatus !== 'downloaded') {
-      statusData = JSON.parse(currentStatus);
-      statusData.count += 1;
-      statusData.lastSeen = Date.now();
-    } else {
-      statusData = {
-        count: 1,
-        lastSeen: Date.now()
-      };
-    }
-    
-    localStorage.setItem('appPromotionStatus', JSON.stringify(statusData));
-  } else if (action === 'permanent_close') {
-      
-    const statusData = {
-      count: 3, 
-      lastSeen: Date.now()
-    };
-    localStorage.setItem('appPromotionStatus', JSON.stringify(statusData));
-  }
-}
-
-function showAppPromotion() {
-  const userAgent = navigator.userAgent || navigator.vendor || window.opera;
-  const isAndroid = /android/i.test(userAgent);
-  
-  if (!isAndroid) return; 
-  
-  const promotionStatus = localStorage.getItem('appPromotionStatus');
-  
-  if (promotionStatus === 'downloaded') {
-    return;
-  }
-  
-  if (promotionStatus && promotionStatus !== 'downloaded') {
-    const statusData = JSON.parse(promotionStatus);
-    
-    if (statusData.count >= 3) {
-      return;
-    }
-    
-    const now = Date.now();
-    const daysSinceLastShow = (now - statusData.lastSeen) / (1000 * 60 * 60 * 24);
-    
-    let daysToWait = 3; 
-    
-    if (statusData.count === 1) {
-      daysToWait = 3; 
-    } else if (statusData.count === 2) {
-      daysToWait = 7;  
-    }
-    
-    if (daysSinceLastShow < daysToWait) {
-      return;
-    }
-  }
-  
-  setTimeout(() => {
-    const promotion = document.getElementById('appPromotion');
-    if (promotion) {
-      promotion.style.display = 'flex';
-      updatePromotionStatus('seen');
-    }
-  }, 5000);
-}
-
-function closePromotion() {
-  const promotion = document.getElementById('appPromotion');
-  if (promotion) {
-    promotion.style.display = 'none';
-  }
-}
-
-function closePromotionPermanently() {
-  const promotion = document.getElementById('appPromotion');
-  if (promotion) {
-    promotion.style.display = 'none';
-    updatePromotionStatus('permanent_close');
-  }
-}
-
-function downloadApp() {
-  
-  updatePromotionStatus('downloaded');
-  window.open('https://tinyurl.com/Dhakkir', '_blank');
-  
-  const promotion = document.getElementById('appPromotion');
-  if (promotion) {
-    promotion.style.display = 'none';
-  }
-}
-
+// بدء التحميل عند فتح الصفحة
 document.addEventListener('DOMContentLoaded', init);
 </script>
 </body>
